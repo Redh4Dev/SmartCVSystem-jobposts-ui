@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Dashboard – SmartCVSystem{% endblock %}
+{% block content %}
+  <h1>Welcome, {{ user.get_username }}!</h1>
+  <p>This is the AuthX dashboard / landing page.</p>
+  <ul>
+    <!-- <li><a href="{% url 'authx:login' %}">Login</a></li>
+    <li><a href="{% url 'authx:register' %}">Register</a></li>
+    <li><a href="{% url 'profiles:detail' %}">My Profile</a></li>
+    <li><a href="{% url 'authx:logout' %}">Logout</a></li> -->
+  </ul>
+{% endblock %}

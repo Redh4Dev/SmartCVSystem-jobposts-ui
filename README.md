@@ -109,4 +109,52 @@ SmartCVSystem/
 └── static/                  # Global static assets
 
 
+python manage.py startapp authx apps/authx
+python manage.py startapp profiles apps/profiles
+python manage.py startapp resumes    apps/resumes
+python manage.py startapp repository apps/repository
+python manage.py startapp jobposts   apps/jobposts
+python manage.py startapp matching   apps/matching
+python manage.py startapp shortlist  apps/shortlist
+python manage.py startapp dashboard  apps/dashboard
+python manage.py startapp common     apps/common
+
+## After clone
+
+# 1. Clone the repo (if they haven’t already)
+git clone https://github.com/your-username/SmartCVSystem.git
+cd SmartCVSystem
+
+# 2. Create a Python virtual environment
+#    (Use `python3` on macOS/Linux or just `python` on Windows if that’s your default)
+python -m venv .venv
+
+# 3. Activate the virtual environment
+#    On macOS / Linux:
+source .venv/bin/activate
+#    On Windows (PowerShell):
+.venv\Scripts\Activate.ps1
+#    On Windows (CMD):
+.venv\Scripts\activate.bat
+
+# 4. Upgrade pip (optional, but recommended)
+pip install --upgrade pip
+
+# 5. Install all required libraries
+pip install -r requirements.txt
+
+# 6. Copy the example env file and fill in any secrets
+cp .env.example .env          # macOS / Linux
+copy .env.example .env        # Windows CMD
+# — then open `.env` in your editor and add your DB credentials, SECRET_KEY, AWS keys, etc.
+
+# 7. Apply migrations & create a superuser
+python manage.py migrate
+python manage.py createsuperuser
+
+# 8. Run the dev server
+python manage.py runserver
+
+
+
 

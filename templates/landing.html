@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}{{ site_name }}{% endblock %}
+
+{% block content %}
+  <div class="text-center my-5">
+    <h1>{{ site_name }}</h1>
+    <p class="lead">{{ tagline }}</p>
+    <ul class="list-unstyled">
+      {% for feat in features %}
+        <li>✓ {{ feat }}</li>
+      {% endfor %}
+    </ul>
+    <a href="{% url 'authx:login' %}" class="btn btn-primary mx-1">Log In</a>
+    <a href="{% url 'authx:register' %}" class="btn btn-outline-secondary mx-1">Register</a>
+  </div>
+{% endblock %}
