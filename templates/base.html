@@ -22,7 +22,7 @@
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
     <div class="container-fluid">
-      <a class="navbar-brand" href="">SmartCVSystem</a> 
+      <a class="navbar-brand" href="">Smart CV</a> 
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
               data-bs-target="#navbarNav" aria-controls="navbarNav"
               aria-expanded="false" aria-label="Toggle navigation">
@@ -35,18 +35,21 @@
               <a class="nav-link" href="{% url 'profiles:detail' %}">Profile</a> 
             </li>
             <li class="nav-item">
-              <form method="post" action="">
-                {% csrf_token %}
-                <button class="btn btn-link nav-link" type="submit">Logout</button>
-              </form>
+              <a class="btn btn-link" href="{% url 'authx:logout' %}">Logout</a>
             </li>
           {% else %}
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'authx:login' %}">Login</a> 
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'authx:register' %}">Register</a> 
-            </li>
+            {# don't show Login when already on login page #}
+            {% if request.resolver_match.url_name != 'login' %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'authx:login' %}">Login</a>
+              </li>
+            {% endif %}
+            {# don't show Register when already on register page #}
+            {% if request.resolver_match.url_name != 'register' %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'authx:register' %}">Register</a>
+              </li>
+            {% endif %}
           {% endif %}
         </ul>
       </div>
