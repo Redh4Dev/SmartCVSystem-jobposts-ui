@@ -5,3 +5,7 @@ from django.views import View
 class DetailView(View):
     def get(self, request):
         return render(request, "profile/detailView.html")
+    
+class DashboardView(View):
+    def get(self, request):
+        return render(request, "profile/dashboard.html")
