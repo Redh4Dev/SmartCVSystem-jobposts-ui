@@ -16,10 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
-from apps.common.views import landing
+from apps.common.views import landing,dashboard
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path ("dashboard/",dashboard, name="dashboard"),
     path("", landing, name="landing"),
     path("auth/", include("apps.authx.urls", namespace="authx")),
     path("profiles/", include("apps.profiles.urls", namespace="profiles")),
