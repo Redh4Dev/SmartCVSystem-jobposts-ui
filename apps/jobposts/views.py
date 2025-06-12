@@ -12,6 +12,44 @@ from django.utils import timezone
 from django.shortcuts import render, redirect
 from django.views import View
 
+class SavedJobsView(SessionRequiredMixin, ListView):
+    """
+    Lists all JobPosts that the current user has saved for later.
+    """
+    model               = UserJob
+    template_name       = 'jobposts/saved_jobs.html'
+    context_object_name = 'saved_apps'
+
+    def get_queryset(self):
+        user_id = self.request.session['user_id']
+        return (
+            UserJob.objects
+                   .filter(User_id=user_id, IsSaved=True)
+                   .select_related('JobPost')
+                   .order_by('-CreatedAt')
+        )
+    
+class MyApplicationsView(SessionRequiredMixin, ListView):
+    """
+    Lists all JobPosts that the current user has applied to.
+    """
+    model               = UserJob
+    template_name       = 'jobposts/my_applications.html'
+    context_object_name = 'applications'
+    
+    def get_queryset(self):
+        user_id = self.request.session['user_id']
+        return (
+            UserJob.objects
+                   .filter(User_id=user_id, IsApplied=True)
+                   .select_related('JobPost')
+                   .order_by('-CreatedAt')
+        )
+
+    def get_context_data(self, **ctx):
+        ctx = super().get_context_data(**ctx)
+        # you might want to pass roles/user info too
+        return ctx
 class JobPostApplicantsView(SessionRequiredMixin, ListView):
     """
     Lists all users who have applied to a given JobPost.

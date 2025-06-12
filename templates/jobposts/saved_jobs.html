@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load markdownify %}
+{% block title %}Saved Jobs | {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <h2>Saved Jobs</h2>
+  <p><a href="{% url 'jobposts:search' %}" class="btn btn-link">← Search More Jobs</a></p>
+
+  {% if saved_apps %}
+    <div class="list-group">
+      {% for app in saved_apps %}
+      <div class="list-group-item shadow-sm mb-3 p-4 rounded">
+        <div class="d-flex justify-content-between">
+          <h5 class="mb-1">{{ app.JobPost.Title }}</h5>
+          <small class="text-muted">
+            Saved on {{ app.CreatedAt|date:"Y-m-d H:i" }}
+          </small>
+        </div>
+
+        <p class="mb-2">
+          <strong>Location:</strong> {{ app.JobPost.Location }}<br>
+          <strong>Type:</strong> {{ app.JobPost.get_EmploymentType_display }}
+        </p>
+
+        <p class="mb-3 markdown-body">
+          {{ app.JobPost.Description|truncatechars:200|markdownify }}
+        </p>
+
+        <div class="d-flex gap-2">
+          <form method="post" class="d-inline" action="{% url 'jobposts:search' %}">
+            {% csrf_token %}
+            <input type="hidden" name="job_id" value="{{ app.JobPost.pk }}">
+            <button
+              type="submit"
+              name="action" value="apply"
+              class="btn btn-sm btn-success"
+            >
+              Apply Now
+            </button>
+          </form>
+
+          <form method="post" class="d-inline" action="{% url 'jobposts:search' %}">
+            {% csrf_token %}
+            <input type="hidden" name="job_id" value="{{ app.JobPost.pk }}">
+            <button
+              type="submit"
+              name="action" value="save"
+              class="btn btn-sm btn-outline-secondary"
+            >
+              Unsave
+            </button>
+          </form>
+
+          <a href="{% url 'jobposts:detail' app.JobPost.pk %}" class="btn btn-sm btn-outline-primary">
+            View Details
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>You haven’t saved any jobs yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

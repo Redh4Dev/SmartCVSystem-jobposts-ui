@@ -5,6 +5,8 @@ from .views      import (
     JobPostUpdateView,
     JobPostApplicantsView,
     JobPostCandidateJobSearchView,
+    MyApplicationsView,
+    SavedJobsView
 )
 app_name = 'jobposts'
 
@@ -15,6 +17,10 @@ urlpatterns = [
 
     # SEARCH is also a static literal → must go before any '<int:pk>' patterns
     path('search/', JobPostCandidateJobSearchView.as_view(), name='search'),
+    path('my_applications/',
+     MyApplicationsView.as_view(),
+     name='my_applications'),
+     path('saved/', SavedJobsView.as_view(), name='saved_jobs'),
 
     # now your dynamic patterns
     path('<int:pk>/edit/',       JobPostUpdateView.as_view(),     name='edit'),
