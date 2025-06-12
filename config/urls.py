@@ -28,24 +28,22 @@ def dummy(request):
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("auth/", include("apps.authx.urls", namespace="authx")),
-    path("debug/", include(debug_toolbar.urls)),
+
     path("", landing, name="landing"),
 
-    #path ("dashboard/",DashboardView.as_view(), name="dashboard"),
     path("", include("apps.profiles.urls", namespace="profiles")),
-    #path("", include("apps.profiles.urls", namespace="dashboard ")),
+
     path("jobs/", include('apps.jobposts.urls', namespace='jobposts')),
 
 
         # ——— Dummy recruiter URLs ———
     path('recruiter/', include(([
         path('job_list/',    dummy, name='job_list'),
-        path('applicants/',  dummy, name='applicants'),
+
     ], 'recruiter'), namespace='recruiter')),
 
     # ——— Dummy candidate URLs ———
     path('candidate/', include(([
-        path('search_jobs/',     dummy, name='search_jobs'),
         path('my_applications/', dummy, name='my_applications'),
     ], 'candidate'), namespace='candidate')),
 
@@ -55,7 +53,7 @@ urlpatterns = [
         path('onboard/',  dummy, name='onboard'),
     ], 'company'), namespace='company')),
 
-
+    path("debug/", include(debug_toolbar.urls)),
 
 ]
 

@@ -1,17 +1,22 @@
 from django.urls import path,include
-from .views      import CandidateJobSearchView,JobPostApplicantsView,JobPostListView, JobPostCreateView,JobPostUpdateView
+from .views      import (
+    JobPostListView,
+    JobPostCreateView,
+    JobPostUpdateView,
+    JobPostApplicantsView,
+    JobPostCandidateJobSearchView,
+)
 app_name = 'jobposts'
 
 urlpatterns = [
-    path('',               JobPostListView.as_view(),   name='list'),
-    path('new/',           JobPostCreateView.as_view(), name='create'),
-     path('<int:pk>/edit/', JobPostUpdateView.as_view(),   name='edit'),# you can add detail/edit/delete routes here later…
-    path('<int:pk>/applicants/',
-         JobPostApplicantsView.as_view(),
-         name='applicants'),
-      path(
-        'search/',
-        CandidateJobSearchView.as_view(),
-        name='search'
-    ),
+    # LIST & CREATE are all static → keep them first
+    path('',      JobPostListView.as_view(),   name='list'),
+    path('new/',  JobPostCreateView.as_view(), name='create'),
+
+    # SEARCH is also a static literal → must go before any '<int:pk>' patterns
+    path('search/', JobPostCandidateJobSearchView.as_view(), name='search'),
+
+    # now your dynamic patterns
+    path('<int:pk>/edit/',       JobPostUpdateView.as_view(),     name='edit'),
+    path('<int:pk>/applicants/', JobPostApplicantsView.as_view(), name='applicants'),
 ]

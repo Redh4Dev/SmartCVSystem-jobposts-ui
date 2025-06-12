@@ -13,7 +13,8 @@
         </div>
         <div class="card-body">
           <form method="post" enctype="multipart/form-data">
-            {% csrf_token %} {{ resume_form.non_field_errors }}
+            {% csrf_token %} 
+            {{ resume_form.non_field_errors }}
 
             <div class="mb-3">
               <label
@@ -23,7 +24,11 @@
                 Select file
               </label>
               {{ resume_form.FilePath|add_class:"form-control" }} 
-              {{ resume_form.file.errors }}
+                {% if resume_form.FilePath.errors %}
+                  <div class="text-danger mt-1">
+                    {{ resume_form.FilePath.errors|join:", " }}
+                  </div>
+                {% endif %}
             </div>
 
             <div class="d-grid">

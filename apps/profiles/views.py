@@ -45,7 +45,9 @@ class ManageResumesView(SessionRequiredMixin,View):
                 rf.save()
                 messages.success(request, "Resume uploaded.")
             else:
-                messages.error(request, "Upload failed.")
+                 return render(request, 'profile/resume.html', {
+                    'resume_form': form
+                })
         elif action == 'select':
             sel_id = request.POST.get('selected_id')
             # clear previous

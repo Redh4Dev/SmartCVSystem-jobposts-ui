@@ -76,13 +76,16 @@ class JobPostUpdateView(SessionRequiredMixin, UpdateView):
     def form_valid(self, form):
         messages.success(self.request, "Job post updated successfully.")
         return super().form_valid(form)
-class CandidateJobSearchView(SessionRequiredMixin, View):
+    
+
+class JobPostCandidateJobSearchView(SessionRequiredMixin, View):
     """
     Let candidates search available jobs, apply or save them.
     """
     template_name = 'jobposts/search.html'
 
     def get(self, request):
+        print("sdsd")
         q = request.GET.get('q', '').strip()
         # base queryset: active jobs
         qs = JobPost.objects.filter(IsActive=True)
@@ -95,8 +98,8 @@ class CandidateJobSearchView(SessionRequiredMixin, View):
         uid = request.session['user_id']
         uj_qs = UserJob.objects.filter(User_id=uid)
         status_map = {uj.JobPost_id: uj for uj in uj_qs}
-
-        return render(request, self.template_name, {
+        print(self.template_name)
+        return render(request, 'jobposts/search.html', {
             'jobs': qs.order_by('-CreatedAt'),
             'status_map': status_map,
             'query': q,
