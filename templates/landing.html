@@ -10,7 +10,11 @@
         <li>✓ {{ feat }}</li>
       {% endfor %}
     </ul>
-    <a href="{% url 'authx:login' %}" class="btn btn-primary mx-1">Log In</a>
-    <a href="{% url 'authx:register' %}" class="btn btn-outline-secondary mx-1">Register</a>
+    {% if not request.session.user_id %}
+      <a href="{% url 'authx:login' %}" class="btn btn-primary mx-1">Log In</a>
+      <a href="{% url 'authx:register' %}" class="btn btn-outline-secondary mx-1">Register</a>
+    {% else %}
+      <a href="{% url 'authx:logout' %}" class="btn btn-secondary mx-1">Log Out</a>
+    {% endif %}
   </div>
 {% endblock %}

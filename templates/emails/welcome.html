@@ -1,0 +1,18 @@
+{# templates/emails/welcome.html #}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Welcome!</title>
+  </head>
+  <body>
+    <h2>Hello {{ user.first_name }},</h2>
+    <p>Thank you for registering at {{ site_name }}.</p>
+    <p>We’re thrilled to have you on board.</p>
+    <hr>
+    <p>
+      If you have any questions, just reply to this email.
+    </p>
+    <p>Cheers,<br>{{ site_name }} Team</p>
+  </body>
+</html>

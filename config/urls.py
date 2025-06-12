@@ -16,13 +16,52 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
-from apps.common.views import landing,dashboard
+from apps.common.views import landing,DashboardView
+import debug_toolbar
+from django.http    import HttpResponse
+from django.conf import settings
+from django.conf.urls.static import static
+
+def dummy(request):
+    return HttpResponse("🚧 Placeholder — coming soon!")
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path ("dashboard/",dashboard, name="dashboard"),
-    path("", landing, name="landing"),
     path("auth/", include("apps.authx.urls", namespace="authx")),
-    path("profiles/", include("apps.profiles.urls", namespace="profiles")),
-    path("", include("apps.profiles.urls", namespace="dashboard ")),
+    path("debug/", include(debug_toolbar.urls)),
+    path("", landing, name="landing"),
+
+    #path ("dashboard/",DashboardView.as_view(), name="dashboard"),
+    path("", include("apps.profiles.urls", namespace="profiles")),
+    #path("", include("apps.profiles.urls", namespace="dashboard ")),
+    path("jobs/", include('apps.jobposts.urls', namespace='jobposts')),
+
+
+        # ——— Dummy recruiter URLs ———
+    path('recruiter/', include(([
+        path('job_list/',    dummy, name='job_list'),
+        path('applicants/',  dummy, name='applicants'),
+    ], 'recruiter'), namespace='recruiter')),
+
+    # ——— Dummy candidate URLs ———
+    path('candidate/', include(([
+        path('search_jobs/',     dummy, name='search_jobs'),
+        path('my_applications/', dummy, name='my_applications'),
+    ], 'candidate'), namespace='candidate')),
+
+    # ——— Dummy company URLs ———
+    path('company/', include(([
+        path('overview/', dummy, name='overview'),
+        path('onboard/',  dummy, name='onboard'),
+    ], 'company'), namespace='company')),
+
+
+
 ]
+
+
+if settings.DEBUG:
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        document_root=settings.MEDIA_ROOT
+    )

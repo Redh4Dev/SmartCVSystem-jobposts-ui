@@ -1,6 +1,89 @@
+
 {% extends "base.html" %}
-{% block title %}{{ site_name }}{% endblock %}
+{% block title %}Dashboard | {{ site_name }}{% endblock %}
 
 {% block content %}
+<div class="container-fluid pt-5">
+  <div class="row">
 
+    {# ——— Sidebar nav ——— #}
+    <nav class="col-md-3 d-none d-md-block bg-light sidebar">
+      <div class="sidebar-sticky pt-3">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link active" href="{% url 'profiles:dashboard' %}">
+              Overview
+            </a>
+          </li>
+
+          {% for role in roles %}
+            {% if role.role_name == 'recruiter' %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'recruiter:job_list' %}">
+                  Manage Jobs
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'recruiter:applicants' %}">
+                  View Applicants
+                </a>
+              </li>
+
+            {% elif role.role_name == 'candidate' %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'jobposts:search' %}">
+                  Search Jobs
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'candidate:my_applications' %}">
+                  My Applications
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'profiles:resume' %}">
+                  My Resume
+                </a>
+              </li>
+
+            {% elif role.role_name == 'Company HR' %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'company:overview' %}">
+                  Company Profile
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'company:onboard' %}">
+                  Onboard Talent
+                </a>
+              </li>
+               <li class="nav-item">
+                <a class="nav-link" href="{% url 'jobposts:list' %}">
+                  Job Listing
+                </a>
+              </li>
+                <li class="nav-item">
+                <a class="nav-link" href="{% url 'jobposts:create' %}">
+                  Post New Vacany
+                </a>
+              </li>
+
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+    </nav>
+
+    {# ——— Main content ——— #}
+    <main role="main" class="col-md-9 ml-sm-auto px-4">
+      {% block dashboard_content %}
+        <div class="pt-4 pb-2 mb-3 border-bottom">
+          <h2>Welcome back, {{ user.first_name }}!</h2>
+        </div>
+        <p>Select an option from the sidebar to get started.</p>
+      {% endblock %}
+    </main>
+
+  </div>
+</div>
 {% endblock %}

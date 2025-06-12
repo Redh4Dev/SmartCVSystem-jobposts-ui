@@ -14,7 +14,7 @@ from pathlib import Path
 import environ
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+STATIC_PATH = os.path. join(BASE_DIR, 'static')
 # Initialize django-environ
 env = environ.Env(
     # set casting, default value
@@ -23,6 +23,10 @@ env = environ.Env(
 
 # read .env file
 environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
+
+# Where uploaded media files are stored
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL  = '/media/'
 
 
 # Quick-start development settings - unsuitable for production
@@ -54,6 +58,10 @@ INSTALLED_APPS = [
     "apps.common",  
     "apps.authx.apps.AuthxConfig",
     "apps.profiles.apps.ProfilesConfig",
+    "apps.jobposts.apps.JobpostsConfig",
+     'widget_tweaks',
+     'debug_toolbar',
+     'markdownify',
 ]
 
 MIDDLEWARE = [
@@ -64,6 +72,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',  # ← add this
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -78,6 +87,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                "config.context_processors.site_name",
             ],
         },
     },
@@ -95,6 +105,14 @@ WSGI_APPLICATION = 'config.wsgi.application'
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+# PASSWORD_HASHERS = (
+#     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+#     'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+#     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+#     'django.contrib.auth.hashers.BCryptPasswordHasher',
+#     'django.contrib.auth.hashers.MD5PasswordHasher',
+# )
+
 
 DATABASES = {
     "default": {
@@ -156,8 +174,56 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
-
+STATICFILES_DIRS = [
+    STATIC_PATH,
+]
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+#ac02c1e47fa13baf1ae92ba16ec9a01c - mailtrap
+# 1) Use the SMTP backend
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# 2) Mailtrap (or your SMTP) credentials
+EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
+EMAIL_HOST_USER = '223d95ec7ae7ac'
+EMAIL_HOST_PASSWORD = 'fe97c5ecd6bd9c'
+EMAIL_PORT = '2525'
+# 3) Default “from” address
+DEFAULT_FROM_EMAIL = 'smtp@mailtrap.io'
+
+# Only show toolbar on these internal IPs (adjust as needed)
+INTERNAL_IPS = [
+    '127.0.0.1',
+    'localhost',
+    # if you’re in Docker or VM, add your host IP here
+]
+
+SITE_NAME = "SmartCV"
+
+# Where to redirect for @login_required and LoginRequiredMixin
+LOGIN_URL          = '/auth/login/'
+LOGIN_REDIRECT_URL = '/'       # After login, go here
+LOGOUT_REDIRECT_URL= '/auth/login/'
+AUTH_USER_MODEL = 'authx.User'
+# Session settings (you can adjust as you like):
+SESSION_COOKIE_AGE     = 14 * 24 * 60 * 60   # two weeks
+SESSION_SAVE_EVERY_REQUEST = True
+
+LOGGING = {
+  'version': 1,
+  'handlers': {
+    'console': {'class': 'logging.StreamHandler'},
+  },
+  'loggers': {
+    # catch mail backend logs
+    'django.core.mail': {
+      'handlers': ['console'],
+      'level': 'DEBUG',
+      'propagate': True,
+    },
+  },
+}
+
+

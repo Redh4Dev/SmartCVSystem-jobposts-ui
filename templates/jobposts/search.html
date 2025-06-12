@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% load markdownify job_extras  %}
+{% block title %}Job Search | {{ site_name }}{% endblock %}
+
+
+{% block content %}
+<div class="container my-5">
+  <h2>Find Jobs</h2>
+
+  <form method="get" class="row g-2 mb-4">
+    <div class="col-md-10">
+      <input
+        type="text" name="q"
+        value="{{ query }}"
+        class="form-control"
+        placeholder="Search by title, description, skills…"
+      >
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-primary w-100">Search</button>
+    </div>
+  </form>
+
+  {% if jobs %}
+    <div class="list-group">
+      {% for job in jobs %}
+        {% with uj=status_map|get_item:job.JobPostID %}
+        <div class="list-group-item mb-4 shadow-sm p-4 rounded">
+
+          <div class="d-flex justify-content-between align-items-start">
+            <h4 class="mb-1">{{ job.Title }}</h4>
+            <small class="text-muted">{{ job.CreatedAt|date:"Y-m-d" }}</small>
+          </div>
+
+          {# Location, Type, Remote, Salary #}
+          <p class="mb-2">
+            <strong>Location:</strong> {{ job.Location }}<br>
+            <strong>Employment:</strong> {{ job.get_EmploymentType_display }}<br>
+            <strong>Remote:</strong> {{ job.RemoteOption }}<br>
+            {% if job.MinSalary or job.MaxSalary %}
+              <strong>Salary:</strong>
+              {{ job.MinSalary|default:"—" }} –
+              {{ job.MaxSalary|default:"—" }}
+              <small>per annum</small><br>
+            {% endif %}
+            {% if job.ApplicationDeadline %}
+              <strong>Deadline:</strong> {{ job.ApplicationDeadline|date:"Y-m-d" }}<br>
+            {% endif %}
+          </p>
+
+          {# Industry, Experience, Education #}
+          <p class="mb-2">
+            {% if job.Industry %}
+              <strong>Industry:</strong> {{ job.Industry }}<br>
+            {% endif %}
+            <strong>Experience Level:</strong> {{ job.get_ExperienceLevel_display }}<br>
+            <strong>Education Required:</strong> {{ job.get_EducationLevel_display }}
+          </p>
+
+          {# Description and Skills (Markdownified) #}
+          <div class="mb-3 markdown-body">
+            <h6>Description</h6>
+            {{ job.Description|markdownify|safe }}
+          </div>
+          <div class="mb-3 markdown-body">
+            <h6>Required Skills</h6>
+            {{ job.RequiredSkills|markdownify|safe }}
+          </div>
+
+          {# Benefits #}
+          {% if job.Benefits %}
+          <div class="mb-3 markdown-body">
+            <h6>Benefits</h6>
+            {{ job.Benefits|markdownify|safe }}
+          </div>
+          {% endif %}
+
+          {# Apply/Save buttons #}
+          <div class="d-flex gap-2">
+            <form method="post" class="d-inline">
+              {% csrf_token %}
+              <input type="hidden" name="job_id" value="{{ job.JobPostID }}">
+              <input type="hidden" name="q" value="{{ query }}">
+              <button
+                type="submit"
+                name="action" value="apply"
+                class="btn btn-sm {% if uj and uj.IsApplied %}btn-secondary disabled{% else %}btn-success{% endif %}"
+                {% if uj and uj.IsApplied %}disabled{% endif %}
+              >
+                {% if uj and uj.IsApplied %}Applied{% else %}Apply Now{% endif %}
+              </button>
+            </form>
+
+            <form method="post" class="d-inline">
+              {% csrf_token %}
+              <input type="hidden" name="job_id" value="{{ job.JobPostID }}">
+              <input type="hidden" name="q" value="{{ query }}">
+              <button
+                type="submit"
+                name="action" value="save"
+                class="btn btn-sm {% if uj and uj.IsSaved %}btn-warning disabled{% else %}btn-outline-warning{% endif %}"
+                {% if uj and uj.IsSaved %}disabled{% endif %}
+              >
+                {% if uj and uj.IsSaved %}Saved{% else %}Save for Later{% endif %}
+              </button>
+            </form>
+          </div>
+
+        </div>
+        {% endwith %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>No jobs found.</p>
+  {% endif %}
+</div>
+{% endblock %}

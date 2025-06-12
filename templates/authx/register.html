@@ -1,2 +1,137 @@
+{# templates/authx/register.html #}
 {% extends "base.html" %}
-{% block title %}{{ site_name }}{% endblock %}
+{% load widget_tweaks %}
+{% block title %}Register | {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">Create Your Account</h4>
+        </div>
+        <div class="card-body">
+
+          {% if messages %}
+            {% for msg in messages %}
+              <div class="alert alert-{{ msg.tags }} alert-dismissible fade show" role="alert">
+                {{ msg }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+
+          <form method="post" novalidate>
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+
+            {# --- existing user fields --- #}
+            <div class="mb-3">
+              <label for="{{ form.first_name.id_for_label }}" class="form-label">
+                {{ form.first_name.label }}
+              </label>
+              {{ form.first_name|add_class:"form-control" }}
+              {{ form.first_name.errors }}
+            </div>
+            <div class="mb-3">
+              <label for="{{ form.last_name.id_for_label }}" class="form-label">
+                {{ form.last_name.label }}
+              </label>
+              {{ form.last_name|add_class:"form-control" }}
+              {{ form.last_name.errors }}
+            </div>
+            <div class="mb-3">
+              <label for="{{ form.email.id_for_label }}" class="form-label">
+                {{ form.email.label }}
+              </label>
+              {{ form.email|add_class:"form-control" }}
+              {{ form.email.errors }}
+            </div>
+            <div class="mb-3">
+              <label for="{{ form.username.id_for_label }}" class="form-label">
+                {{ form.username.label }}
+              </label>
+              {{ form.username|add_class:"form-control" }}
+              {{ form.username.errors }}
+            </div>
+            <div class="mb-3">
+              <label for="{{ form.password.id_for_label }}" class="form-label">
+                {{ form.password.label }}
+              </label>
+              {{ form.password|add_class:"form-control" }}
+              {{ form.password.errors }}
+            </div>
+
+            {# --- account type dropdown --- #}
+            <div class="mb-3">
+              <label for="role" class="form-label">Account Type</label>
+              <select name="role" id="role" class="form-select" required>
+                <option value="">— Select your role —</option>
+                {% for role in roles %}
+                  <option value="{{ role.role_id }}">{{ role.role_name|capfirst }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            {# --- company details, hidden by default --- #}
+            <div id="company-fields" style="display: none;">
+              <hr>
+              <h5>Company Details</h5>
+
+              <div class="mb-3">
+                <label for="company_name" class="form-label">Company Name</label>
+                <input type="text" name="company_name" id="company_name"
+                       class="form-control" placeholder="Acme Corp">
+              </div>
+
+              <div class="mb-3">
+                <label for="company_address" class="form-label">Address</label>
+                <textarea name="company_address" id="company_address"
+                          class="form-control" rows="3"
+                          placeholder="123 Main St, Anytown…"></textarea>
+              </div>
+
+              <div class="mb-3">
+                <label for="company_website" class="form-label">Website</label>
+                <input type="url" name="company_website" id="company_website"
+                       class="form-control" placeholder="https://…">
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Register</button>
+          </form>
+        </div>
+
+        <div class="card-footer text-center">
+          Already have an account?
+          <a href="{% url 'authx:login' %}" class="link-primary">Log in here</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# --- toggling script --- #}
+<script>
+ document.addEventListener('DOMContentLoaded', function() {
+  const roleSelect   = document.getElementById('role');
+  const companyBlock = document.getElementById('company-fields');
+
+  function toggleCompany() {
+    const label = roleSelect
+      .options[roleSelect.selectedIndex]
+      .textContent
+      .trim();
+
+    // show if Company_hr OR Recruiter
+    companyBlock.style.display = 
+      (label === 'Company HR' || label === 'Recruiter')
+        ? 'block'
+        : 'none';
+  }
+  roleSelect.addEventListener('change', toggleCompany);
+  toggleCompany();  // init on load
+});
+</script>
+{% endblock %}

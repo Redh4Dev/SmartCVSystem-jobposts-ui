@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{%load widget_tweaks job_extras  %} 
+{% block title %}Applicants for {{ job.Title }} | {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <h2>Applicants for &ldquo;{{ job.Title }}&rdquo;</h2>
+  <p><a href="{% url 'jobposts:list' %}" class="btn btn-link">← Back to Jobs</a></p>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Applied At</th>
+        <th>Resume</th> 
+      </tr>
+    </thead>
+    <tbody>
+      {% for app in applications %}
+      <tr>
+        <td>{{ app.User.username }}</td>
+        <td>{{ app.User.email }}</td>
+        <td>{{ app.CreatedAt|date:"Y-m-d H:i" }}</td>
+           <td>
+          {% with resume=app.User|selected_resume %}
+            {% if resume %}
+              <a href="{{ resume.FilePath.url }}" download>
+                {{ resume.FilePath.name|filename }}
+              </a>
+            {% else %}
+              <span class="text-muted">No resume</span>
+            {% endif %}
+          {% endwith %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="3" class="text-center">No applicants yet.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

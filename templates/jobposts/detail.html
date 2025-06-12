@@ -1,0 +1,49 @@
+{# apps/jobposts/templates/jobposts/detail.html #}
+{% extends "base.html" %}
+{% load markdownify %}
+
+{% block content %}
+<div class="container my-5">
+
+  <div class="card mb-4">
+    <div class="card-header">
+      <h2>{{ job.title }}</h2>
+      <small class="text-muted">
+        Posted by {{ job.recruiter.username }} on {{ job.created_at|date:"M d, Y" }}
+      </small>
+    </div>
+    <div class="card-body">
+      <h5>Description</h5>
+      <div class="markdown-body">
+        {{ job.description|markdownify }}
+      </div>
+
+      <hr>
+
+      <h5>Required Skills</h5>
+      <div class="markdown-body">
+        {{ job.required_skills|markdownify }}
+      </div>
+
+      <p class="mt-4">
+        <strong>Min. Experience:</strong>
+        {{ job.min_experience }} year{{ job.min_experience|pluralize }}
+      </p>
+
+      <p>
+        <strong>Status:</strong>
+        {% if job.is_active %}
+          <span class="badge bg-success">Active</span>
+        {% else %}
+          <span class="badge bg-secondary">Closed</span>
+        {% endif %}
+      </p>
+    </div>
+  </div>
+
+  <a href="{% url 'jobposts:list' %}" class="btn btn-outline-primary">
+    ← Back to all jobs
+  </a>
+
+</div>
+{% endblock %}

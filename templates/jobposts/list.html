@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container my-5">
+  <h2>Your Job Posts</h2>
+  <a href="{% url 'jobposts:create' %}" class="btn btn-primary mb-3">New Job</a>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Applicants</th>
+        <th>Location</th>
+        <th>Type</th>
+        <th>Posted</th>
+        <th>Active?</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for job in jobs %}
+      <tr>
+        <td>{{ job.Title }}</td>
+            <td>
+      <a href="{% url 'jobposts:applicants' job.pk %}">
+        {{ job.num_applications }}
+      </a>
+    </td>
+        <td>{{ job.Location }}</td>
+        <td>{{ job.get_EmploymentType_display }}</td>
+        <td>{{ job.CreatedAt|date:"Y-m-d" }}</td>
+        <td>{{ job.IsActive|yesno:"Yes,No" }}</td>
+        <td>
+          <a href="{% url 'jobposts:edit' job.pk %}" class="btn btn-sm btn-outline-secondary">
+            Edit
+          </a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7">No job posts yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

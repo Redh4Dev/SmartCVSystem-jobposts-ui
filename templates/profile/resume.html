@@ -1,0 +1,115 @@
+{# apps/profiles/templates/profiles/resume.html #} {% extends "base.html" %} 
+{%load widget_tweaks file_extras  %} 
+{% block title %}Manage Resumes | {{ site_name }}
+{% endblock %}
+{% block content %}
+<div class="container my-5">
+  <div class="row">
+    {# — New Upload Form — #}
+    <div class="col-md-4">
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">Upload New Resume</h5>
+        </div>
+        <div class="card-body">
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %} {{ resume_form.non_field_errors }}
+
+            <div class="mb-3">
+              <label
+                for="{{ resume_form.FilePath.id_for_label }}"
+                class="form-label"
+              >
+                Select file
+              </label>
+              {{ resume_form.FilePath|add_class:"form-control" }} 
+              {{ resume_form.file.errors }}
+            </div>
+
+            <div class="d-grid">
+              <button
+                type="submit"
+                name="action"
+                value="upload"
+                class="btn btn-success"
+              >
+                Upload
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    {# — Resume History Table — #}
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-header bg-secondary text-white">
+          <h5 class="mb-0">Uploaded Resumes</h5>
+        </div>
+        <div class="card-body p-0">
+          <form method="post">
+            {% csrf_token %}
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col">Use</th>
+                  <th scope="col">File</th>
+                  <th scope="col">Status</th>
+                  <th>Selected?</th>
+                  <th scope="col">Uploaded</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for resume in resumes %}
+                <tr>
+                  <td class="align-middle">
+                    <input
+                      type="radio"
+                      name="selected_id"
+                      value="{{ resume.pk }}"
+                      {% if resume.IsSelected %} checked{% endif %}
+                    />
+                  </td>
+                  <td class="align-middle">
+                    <a href="{{ resume.FilePath.url }}" target="_blank">
+                       {{ resume.FilePath.name|filename }}
+                    </a>
+                  </td>
+                  <td class="align-middle">{{ resume.Status }}</td>
+                  <td class="align-middle text-center">
+                    {% if resume.IsSelected %}
+                      <i class="fa-solid fa-check-circle text-success"></i>
+                    {% endif %}
+                  </td>
+                  <td class="align-middle">
+                    {{ resume.UploadedAt|date:"d/m/Y H:i" }}
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="5" class="text-center py-4">
+                    No resumes uploaded yet.
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+
+            <div class="card-footer text-end">
+              <button
+                type="submit"
+                name="action"
+                value="select"
+                class="btn btn-primary"
+              >
+                Save Selection
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
