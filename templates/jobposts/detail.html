@@ -1,49 +1,74 @@
-{# apps/jobposts/templates/jobposts/detail.html #}
 {% extends "base.html" %}
 {% load markdownify %}
+{% block title %}{{ job.Title }} | {{ site_name }}{% endblock %}
 
 {% block content %}
 <div class="container my-5">
-
-  <div class="card mb-4">
+  <div class="card shadow-sm">
     <div class="card-header">
-      <h2>{{ job.title }}</h2>
-      <small class="text-muted">
-        Posted by {{ job.recruiter.username }} on {{ job.created_at|date:"M d, Y" }}
-      </small>
+      <h2>{{ job.Title }}</h2>
+      <small class="text-muted">Posted on {{ job.CreatedAt|date:"Y-m-d" }}</small>
     </div>
     <div class="card-body">
-      <h5>Description</h5>
-      <div class="markdown-body">
-        {{ job.description|markdownify }}
-      </div>
 
-      <hr>
-
-      <h5>Required Skills</h5>
-      <div class="markdown-body">
-        {{ job.required_skills|markdownify }}
-      </div>
-
-      <p class="mt-4">
-        <strong>Min. Experience:</strong>
-        {{ job.min_experience }} year{{ job.min_experience|pluralize }}
-      </p>
-
+      {# Meta info #}
       <p>
-        <strong>Status:</strong>
-        {% if job.is_active %}
-          <span class="badge bg-success">Active</span>
-        {% else %}
-          <span class="badge bg-secondary">Closed</span>
+        <strong>Location:</strong> {{ job.Location }}<br>
+        <strong>Type:</strong> {{ job.get_EmploymentType_display }}<br>
+        <strong>Remote:</strong> {{ job.RemoteOption }}<br>
+        {% if job.MinSalary or job.MaxSalary %}
+          <strong>Salary:</strong> {{ job.MinSalary|default:"—" }} – {{ job.MaxSalary|default:"—" }}<br>
+        {% endif %}
+        {% if job.ApplicationDeadline %}
+          <strong>Deadline:</strong> {{ job.ApplicationDeadline|date:"Y-m-d" }}<br>
         {% endif %}
       </p>
+
+      {# Description #}
+      <div class="mb-4 markdown-body">
+        <h5>Description</h5>
+        {{ job.Description|markdownify|safe }}
+      </div>
+
+      {# Skills #}
+      <div class="mb-4 markdown-body">
+        <h5>Required Skills</h5>
+        {{ job.RequiredSkills|markdownify|safe }}
+      </div>
+
+      {# Benefits #}
+      {% if job.Benefits %}
+      <div class="mb-4 markdown-body">
+        <h5>Benefits</h5>
+        {{ job.Benefits|markdownify|safe }}
+      </div>
+      {% endif %}
+
+      {# Apply / Save forms #}
+      <div class="d-flex gap-2 mb-3">
+        <form method="post">
+          {% csrf_token %}
+          <button
+            type="submit"
+            name="action" value="apply"
+            class="btn btn-success btn-lg"
+          >Apply Now</button>
+        </form>
+        <form method="post">
+          {% csrf_token %}
+          <button
+            type="submit"
+            name="action" value="save"
+            class="btn btn-outline-warning btn-lg"
+          >Save for Later</button>
+        </form>
+      </div>
+
+      {# Link back #}
+      <a href="{% url 'jobposts:search' %}?q={{ request.GET.q|urlencode }}" class="btn btn-link">
+        ← Back to Search
+      </a>
     </div>
   </div>
-
-  <a href="{% url 'jobposts:list' %}" class="btn btn-outline-primary">
-    ← Back to all jobs
-  </a>
-
 </div>
 {% endblock %}

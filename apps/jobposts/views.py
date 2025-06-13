@@ -1,4 +1,4 @@
-from django.views.generic import CreateView
+from django.views.generic import CreateView,DetailView
 from django.urls           import reverse_lazy
 from django.contrib        import messages
 
@@ -12,6 +12,38 @@ from django.utils import timezone
 from django.shortcuts import render, redirect
 from django.views import View
 
+
+class JobPostDetailView(SessionRequiredMixin, DetailView):
+    """
+    Shows full details of a single job, and handles apply/save POSTs.
+    """
+    model               = JobPost
+    template_name       = 'jobposts/detail.html'
+    context_object_name = 'job'
+
+    def post(self, request, *args, **kwargs):
+        # handle apply/save from the detail page
+        action = request.POST.get('action')
+        job_id = self.get_object().JobPostID
+        uid    = request.session['user_id']
+
+        uj, created = UserJob.objects.get_or_create(
+            User_id=uid,
+            JobPost_id=job_id,
+            defaults={'CreatedAt': timezone.now()}
+        )
+
+        if action == 'apply':
+            uj.IsApplied = True
+            uj.IsSaved   = False
+            uj.save()
+            messages.success(request, "You’ve applied for this job.")
+        elif action == 'save':
+            uj.IsSaved   = True
+            uj.IsApplied = False
+            uj.save()
+            messages.success(request, "Job saved for later.")
+        return redirect('jobposts:detail', pk=job_id)
 class SavedJobsView(SessionRequiredMixin, ListView):
     """
     Lists all JobPosts that the current user has saved for later.
@@ -30,13 +62,10 @@ class SavedJobsView(SessionRequiredMixin, ListView):
         )
     
 class MyApplicationsView(SessionRequiredMixin, ListView):
-    """
-    Lists all JobPosts that the current user has applied to.
-    """
     model               = UserJob
     template_name       = 'jobposts/my_applications.html'
     context_object_name = 'applications'
-    
+
     def get_queryset(self):
         user_id = self.request.session['user_id']
         return (

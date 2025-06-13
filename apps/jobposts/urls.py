@@ -6,7 +6,8 @@ from .views      import (
     JobPostApplicantsView,
     JobPostCandidateJobSearchView,
     MyApplicationsView,
-    SavedJobsView
+    SavedJobsView,
+    JobPostDetailView
 )
 app_name = 'jobposts'
 
@@ -23,6 +24,7 @@ urlpatterns = [
      path('saved/', SavedJobsView.as_view(), name='saved_jobs'),
 
     # now your dynamic patterns
+    path('<int:pk>/', JobPostDetailView.as_view(), name='detail'),
     path('<int:pk>/edit/',       JobPostUpdateView.as_view(),     name='edit'),
     path('<int:pk>/applicants/', JobPostApplicantsView.as_view(), name='applicants'),
 ]

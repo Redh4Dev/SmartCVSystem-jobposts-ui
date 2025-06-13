@@ -1,5 +1,5 @@
+{# apps/jobposts/templates/jobposts/my_applications.html #}
 {% extends "base.html" %}
-{% load markdownify %}
 {% block title %}My Applications | {{ site_name }}{% endblock %}
 
 {% block content %}
@@ -7,38 +7,44 @@
   <h2>My Applications</h2>
   <p><a href="{% url 'jobposts:search' %}" class="btn btn-link">← Search More Jobs</a></p>
 
-  {% if applications %}
-    <div class="list-group">
+  <table class="table table-hover align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>Job Title</th>
+        <th>Location</th>
+        <th>Type</th>
+        <th>Applied On</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
       {% for app in applications %}
-      <div class="list-group-item shadow-sm mb-3 p-4 rounded">
-        <div class="d-flex justify-content-between">
-          <h5 class="mb-1">{{ app.JobPost.Title }}</h5>
-          <small class="text-muted">
-            Applied on {{ app.CreatedAt|date:"Y-m-d H:i" }}
-          </small>
-        </div>
-        <p class="mb-2">
-          <strong>Location:</strong> {{ app.JobPost.Location }}<br>
-          <strong>Type:</strong> {{ app.JobPost.get_EmploymentType_display }}
-        </p>
-        <p class="mb-3 markdown-body">
-          {{ app.JobPost.Description|truncatechars:200|markdownify }}
-        </p>
-        <div class="d-flex gap-2">
-          <a href="{% url 'jobposts:applicants' app.JobPost.pk %}"
-             class="btn btn-sm btn-outline-primary">
-            View Applicants
+      <tr>
+        <td>
+          <a href="{% url 'jobposts:detail' app.JobPost.pk %}">
+            {{ app.JobPost.Title }}
           </a>
-          <a href="{% url 'jobposts:detail' app.JobPost.pk %}"
-             class="btn btn-sm btn-outline-secondary">
-            View Job
+        </td>
+        <td>{{ app.JobPost.Location }}</td>
+        <td>{{ app.JobPost.get_EmploymentType_display }}</td>
+        <td>{{ app.CreatedAt|date:"Y-m-d H:i" }}</td>
+        <td>
+          <a
+            href="{% url 'jobposts:detail' app.JobPost.pk %}"
+            class="btn btn-sm btn-outline-primary"
+          >
+            View
           </a>
-        </div>
-      </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="5" class="text-center py-4">
+          You haven’t applied to any jobs yet.
+        </td>
+      </tr>
       {% endfor %}
-    </div>
-  {% else %}
-    <p>You haven’t applied to any jobs yet.</p>
-  {% endif %}
+    </tbody>
+  </table>
 </div>
 {% endblock %}
