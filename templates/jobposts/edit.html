@@ -1,0 +1,131 @@
+{# apps/jobposts/templates/jobposts/create.html #}
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Create New Job | {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="mb-2">
+  <div class="row">
+    <div class="col-md-12">
+
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">Create New Job</h5>
+        </div>
+        <div class="card-body">
+          <form method="post" novalidate>
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+
+            {# Title #}
+            <div class="mb-3">
+              <label for="{{ form.Title.id_for_label }}" class="form-label">{{ form.Title.label }}</label>
+              {{ form.Title|add_class:"form-control" }}
+              {{ form.Title.errors }}
+            </div>
+
+            {# Description (Markdown) #}
+            <div class="mb-4">
+              <label for="{{ form.Description.id_for_label }}" class="form-label">{{ form.Description.label }}</label>
+              {{ form.Description|add_class:"form-control" }}
+              {{ form.Description.errors }}
+              <small class="form-text text-muted">You can use **Markdown** here.</small>
+            </div>
+
+            {# Required Skills (Markdown) #}
+            <div class="mb-4">
+              <label for="{{ form.RequiredSkills.id_for_label }}" class="form-label">{{ form.RequiredSkills.label }}</label>
+              {{ form.RequiredSkills|add_class:"form-control" }}
+              {{ form.RequiredSkills.errors }}
+              <small class="form-text text-muted">e.g. <code>- Python</code></small>
+            </div>
+
+            {# Location #}
+            <div class="mb-3">
+              <label for="{{ form.Location.id_for_label }}" class="form-label">{{ form.Location.label }}</label>
+              {{ form.Location|add_class:"form-control" }}
+              {{ form.Location.errors }}
+            </div>
+
+            {# Employment Type #}
+            <div class="mb-3">
+              <label for="{{ form.EmploymentType.id_for_label }}" class="form-label">{{ form.EmploymentType.label }}</label>
+              {{ form.EmploymentType|add_class:"form-select" }}
+              {{ form.EmploymentType.errors }}
+            </div>
+
+            {# Salary Range #}
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="{{ form.MinSalary.id_for_label }}" class="form-label">{{ form.MinSalary.label }}</label>
+                {{ form.MinSalary|add_class:"form-control" }}
+                {{ form.MinSalary.errors }}
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="{{ form.MaxSalary.id_for_label }}" class="form-label">{{ form.MaxSalary.label }}</label>
+                {{ form.MaxSalary|add_class:"form-control" }}
+                {{ form.MaxSalary.errors }}
+              </div>
+            </div>
+
+            {# Remote Option #}
+            <div class="mb-3">
+              <label for="{{ form.RemoteOption.id_for_label }}" class="form-label">{{ form.RemoteOption.label }}</label>
+              {{ form.RemoteOption|add_class:"form-select" }}
+              {{ form.RemoteOption.errors }}
+            </div>
+
+            {# Industry #}
+            <div class="mb-3">
+              <label for="{{ form.Industry.id_for_label }}" class="form-label">{{ form.Industry.label }}</label>
+              {{ form.Industry|add_class:"form-control" }}
+              {{ form.Industry.errors }}
+            </div>
+
+            {# Experience Level #}
+            <div class="mb-3">
+              <label for="{{ form.ExperienceLevel.id_for_label }}" class="form-label">{{ form.ExperienceLevel.label }}</label>
+              {{ form.ExperienceLevel|add_class:"form-select" }}
+              {{ form.ExperienceLevel.errors }}
+            </div>
+
+            {# Education Level #}
+            <div class="mb-3">
+              <label for="{{ form.EducationLevel.id_for_label }}" class="form-label">{{ form.EducationLevel.label }}</label>
+              {{ form.EducationLevel|add_class:"form-select" }}
+              {{ form.EducationLevel.errors }}
+            </div>
+
+            {# Application Deadline #}
+            <div class="mb-3">
+              <label for="{{ form.ApplicationDeadline.id_for_label }}" class="form-label">{{ form.ApplicationDeadline.label }}</label>
+              {{ form.ApplicationDeadline|add_class:"form-control" }}
+              {{ form.ApplicationDeadline.errors }}
+            </div>
+
+            {# Benefits #}
+            <div class="mb-4">
+              <label for="{{ form.Benefits.id_for_label }}" class="form-label">{{ form.Benefits.label }}</label>
+              {{ form.Benefits|add_class:"form-control" }}
+              {{ form.Benefits.errors }}
+            </div>
+
+            {# Active checkbox #}
+            <div class="form-check mb-4">
+              {{ form.IsActive|add_class:"form-check-input" }}
+              <label for="{{ form.IsActive.id_for_label }}" class="form-check-label">{{ form.IsActive.label }}</label>
+            </div>
+
+            {# Submit #}
+            <div class="d-grid">
+              <button type="submit" class="btn btn-success">Publish Job</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
