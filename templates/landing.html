@@ -1,20 +1,77 @@
 {% extends "base.html" %}
-{% block title %}{{ site_name }}{% endblock %}
+{% load static %}
+{% block title %}Welcome | {{ site_name }}{% endblock %}
 
 {% block content %}
-  <div class="text-center my-5">
-    <h1>{{ site_name }}</h1>
-    <p class="lead">{{ tagline }}</p>
-    <ul class="list-unstyled">
-      {% for feat in features %}
-        <li>✓ {{ feat }}</li>
-      {% endfor %}
-    </ul>
-    {% if not request.session.user_id %}
-      <a href="{% url 'authx:login' %}" class="btn btn-primary mx-1">Log In</a>
-      <a href="{% url 'authx:register' %}" class="btn btn-outline-secondary mx-1">Register</a>
-    {% else %}
-      <a href="{% url 'authx:logout' %}" class="btn btn-secondary mx-1">Log Out</a>
-    {% endif %}
+<!-- Hero Section -->
+<section class="bg-primary text-white text-center py-5">
+  <div class="container">
+    <h1 class="display-4 fw-bold">SmartCV</h1>
+    <p class="lead mb-4">Build perfect resumes, discover great jobs, and hire top talent—all in one place.</p>
+    <div class="d-flex justify-content-center gap-3">
+      <a href="{% url 'authx:register' %}" class="btn btn-light btn-lg">Get Started</a>
+      <a href="{% url 'authx:login' %}"    class="btn btn-outline-light btn-lg">Log In</a>
+    </div>
   </div>
+</section>
+
+<!-- Features -->
+<section class="py-5">
+  <div class="container">
+    <div class="row text-center gy-4">
+      <div class="col-md-4">
+        <i class="fa fa-file-alt fa-3x text-primary mb-3"></i>
+        <h5>Smart Resume Builder</h5>
+        <p>Create a polished CV in minutes with AI-powered suggestions and customizable templates.</p>
+      </div>
+      <div class="col-md-4">
+        <i class="fa fa-search fa-3x text-primary mb-3"></i>
+        <h5>Job Matching</h5>
+        <p>Discover roles that fit your skills using our role-based matching engine.</p>
+      </div>
+      <div class="col-md-4">
+        <i class="fa fa-users fa-3x text-primary mb-3"></i>
+        <h5>Hirer Dashboard</h5>
+        <p>Post jobs, review applicants, and collaborate with your team—all from one dashboard.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section class="bg-light py-5">
+  <div class="container">
+    <h2 class="text-center mb-5">How It Works</h2>
+    <div class="row gx-5 gy-4 align-items-center">
+      <div class="col-md-4 text-center">
+        <div class="p-4 border rounded-circle d-inline-block">
+          <span class="badge bg-primary rounded-pill fs-4">1</span>
+        </div>
+        <h6 class="mt-3">Sign Up &amp; Create Profile</h6>
+      </div>
+      <div class="col-md-4 text-center">
+        <div class="p-4 border rounded-circle d-inline-block">
+          <span class="badge bg-primary rounded-pill fs-4">2</span>
+        </div>
+        <h6 class="mt-3">Build or Upload Resume</h6>
+      </div>
+      <div class="col-md-4 text-center">
+        <div class="p-4 border rounded-circle d-inline-block">
+          <span class="badge bg-primary rounded-pill fs-4">3</span>
+        </div>
+        <h6 class="mt-3">Apply &amp; Connect</h6>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5 text-center">
+  <div class="container">
+    <h3 class="mb-4">Ready to transform your career?</h3>
+    <a href="{% url 'authx:register' %}" class="btn btn-primary btn-lg">Join SmartCV Today</a>
+  </div>
+</section>
+
+<!-- Footer (optional override) -->
 {% endblock %}
