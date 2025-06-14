@@ -1,114 +1,75 @@
 {% extends "base.html" %}
-{% load widget_tweaks %}
-
-{% block title %}Create New Job | {{ site_name }}{% endblock %}
+{% load markdownify %}
+{% block title %}{{ job.Title }} | {{ site_name }}{% endblock %}
 
 {% block content %}
-<div class="container my-5" style="max-width: 850px;">
-  <div class="card shadow-sm rounded-4">
-    <div class="card-header bg-primary text-white rounded-top-4">
-      <h5 class="mb-0">Create a New Job Posting</h5>
+<div class="container my-5" style="max-width: 800px;">
+  <a href="{% url 'jobposts:search' %}?q={{ request.GET.q|urlencode }}" class="btn btn-outline-primary rounded-pill px-3 py-1 mb-3 small">
+    ← All Jobs
+  </a>
+
+  <div class="border rounded-4 shadow p-4 bg-white">
+    <div class="mb-4">
+      <h1 class="fw-bold mb-1">{{ job.Title }}</h1>
+      <div class="text-muted small">Posted on {{ job.CreatedAt|date:"d M Y" }}</div>
     </div>
-    <div class="card-body">
-      <form method="post" novalidate>
-        {% csrf_token %}
-        {{ form.non_field_errors }}
 
-        <div class="mb-4">
-          <label for="{{ form.Title.id_for_label }}" class="form-label fw-semibold">Job Title</label>
-          {{ form.Title|add_class:"form-control rounded-3" }}
-          {{ form.Title.errors }}
-        </div>
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <p class="mb-1"><strong>Location:</strong> {{ job.Location }}</p>
+        <p class="mb-1"><strong>Employment Type:</strong> {{ job.get_EmploymentType_display }}</p>
+        <p class="mb-1"><strong>Remote Option:</strong> {{ job.RemoteOption }}</p>
+      </div>
+      <div class="col-md-6">
+        {% if job.MinSalary or job.MaxSalary %}
+          <p class="mb-1"><strong>Salary:</strong> RM {{ job.MinSalary|default:"—" }} – {{ job.MaxSalary|default:"—" }}</p>
+        {% endif %}
+        {% if job.ApplicationDeadline %}
+          <p class="mb-1"><strong>Application Deadline:</strong> {{ job.ApplicationDeadline|date:"Y-m-d" }}</p>
+        {% endif %}
+      </div>
+    </div>
 
-        <div class="mb-4">
-          <label for="{{ form.Description.id_for_label }}" class="form-label fw-semibold">Job Description</label>
-          {{ form.Description|add_class:"form-control rounded-3" }}
-          {{ form.Description.errors }}
-          <small class="form-text text-muted">Supports <strong>Markdown</strong>. Describe responsibilities, tasks, and expectations.</small>
-        </div>
+    <div class="mb-5 markdown-body">
+      <h5 class="fw-semibold mb-2">Job Description</h5>
+      {{ job.Description|markdownify|safe }}
+    </div>
 
-        <div class="mb-4">
-          <label for="{{ form.RequiredSkills.id_for_label }}" class="form-label fw-semibold">Required Skills</label>
-          {{ form.RequiredSkills|add_class:"form-control rounded-3" }}
-          {{ form.RequiredSkills.errors }}
-          <small class="form-text text-muted">Markdown supported. Example: <code>- Python</code></small>
-        </div>
+    <div class="mb-5 markdown-body">
+      <h5 class="fw-semibold mb-2">Required Skills</h5>
+      {{ job.RequiredSkills|markdownify|safe }}
+    </div>
 
-        <div class="mb-4">
-          <label for="{{ form.Location.id_for_label }}" class="form-label fw-semibold">Location</label>
-          {{ form.Location|add_class:"form-control rounded-3" }}
-          {{ form.Location.errors }}
-        </div>
+    {% if job.Benefits %}
+    <div class="mb-5 markdown-body">
+      <h5 class="fw-semibold mb-2">Benefits</h5>
+      {{ job.Benefits|markdownify|safe }}
+    </div>
+    {% endif %}
 
-        <div class="mb-4">
-          <label for="{{ form.EmploymentType.id_for_label }}" class="form-label fw-semibold">Employment Type</label>
-          {{ form.EmploymentType|add_class:"form-select rounded-3" }}
-          {{ form.EmploymentType.errors }}
-        </div>
-
-        <div class="row mb-4">
-          <div class="col-md-6">
-            <label for="{{ form.MinSalary.id_for_label }}" class="form-label fw-semibold">Minimum Salary</label>
-            {{ form.MinSalary|add_class:"form-control rounded-3" }}
-            {{ form.MinSalary.errors }}
-          </div>
-          <div class="col-md-6">
-            <label for="{{ form.MaxSalary.id_for_label }}" class="form-label fw-semibold">Maximum Salary</label>
-            {{ form.MaxSalary|add_class:"form-control rounded-3" }}
-            {{ form.MaxSalary.errors }}
-          </div>
-        </div>
-
-        <div class="mb-4">
-          <label for="{{ form.RemoteOption.id_for_label }}" class="form-label fw-semibold">Remote Option</label>
-          {{ form.RemoteOption|add_class:"form-select rounded-3" }}
-          {{ form.RemoteOption.errors }}
-        </div>
-
-        <div class="mb-4">
-          <label for="{{ form.Industry.id_for_label }}" class="form-label fw-semibold">Industry</label>
-          {{ form.Industry|add_class:"form-control rounded-3" }}
-          {{ form.Industry.errors }}
-        </div>
-
-        <div class="mb-4">
-          <label for="{{ form.ExperienceLevel.id_for_label }}" class="form-label fw-semibold">Experience Level</label>
-          {{ form.ExperienceLevel|add_class:"form-select rounded-3" }}
-          {{ form.ExperienceLevel.errors }}
-        </div>
-
-        <div class="mb-4">
-          <label for="{{ form.EducationLevel.id_for_label }}" class="form-label fw-semibold">Education Level</label>
-          {{ form.EducationLevel|add_class:"form-select rounded-3" }}
-          {{ form.EducationLevel.errors }}
-        </div>
-
-        <div class="mb-4">
-          <label for="{{ form.ApplicationDeadline.id_for_label }}" class="form-label fw-semibold">Application Deadline</label>
-          {{ form.ApplicationDeadline|add_class:"form-control rounded-3" }}
-          {{ form.ApplicationDeadline.errors }}
-        </div>
-
-        <div class="mb-4">
-          <label for="{{ form.Benefits.id_for_label }}" class="form-label fw-semibold">Benefits</label>
-          {{ form.Benefits|add_class:"form-control rounded-3" }}
-          {{ form.Benefits.errors }}
-        </div>
-
-        <div class="form-check mb-4">
-          {{ form.IsActive|add_class:"form-check-input" }}
-          <label for="{{ form.IsActive.id_for_label }}" class="form-check-label">
-            {{ form.IsActive.label }}
-          </label>
-        </div>
-
-        <div class="d-grid">
-          <button type="submit" class="btn btn-success rounded-4 py-2">
-            Publish Job
-          </button>
-        </div>
+    <div class="d-flex flex-wrap gap-2 mb-4">
+      <form method="post">{% csrf_token %}
+        <button
+          type="submit"
+          name="action" value="apply"
+          class="btn btn-primary rounded-4 ppx-3 py-1 shadow-sm small"
+        >
+          Apply Now
+        </button>
       </form>
-    </div>
+    
+      <form method="post">{% csrf_token %}
+        <button
+          type="submit"
+          name="action" value="save"
+          class="btn btn-warning rounded-4 px-3 py-1 shadow-sm text-dark small"
+        >
+          Save for Later
+        </button>
+      </form>
+    </div>    
+
+
   </div>
 </div>
 {% endblock %}
