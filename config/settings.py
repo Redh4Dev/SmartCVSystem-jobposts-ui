@@ -231,7 +231,6 @@ LOGGING = {
 SIDEBAR_MENU = {
     'recruiter': [
         { 'label': 'Manage Jobs',     'url_name': 'jobposts:list'      },
-        { 'label': 'View Applicants', 'url_name': 'jobposts:applicants', 'url_args': {'job_id': 0} },
     ],
     'candidate': [
         { 'label': 'Search Jobs',      'url_name': 'jobposts:search'        },

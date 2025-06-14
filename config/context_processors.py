@@ -11,10 +11,8 @@ def sidebar_menu(request):
     menu   = []
     for role in roles:
         for entry in raw.get(role, []):
-            url_args = entry.get('url_args', {}) or {}
-            url = reverse(entry['url_name'], kwargs=url_args)
             menu.append({
                 'label': entry['label'],
-                'url':   url,
+                'url':   reverse(entry['url_name']),
             })
     return { 'sidebar_menu': menu }
