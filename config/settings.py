@@ -14,7 +14,7 @@ from pathlib import Path
 import environ
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-STATIC_PATH = os.path. join(BASE_DIR, 'static')
+STATIC_PATH = os.path.join(BASE_DIR, 'static')
 # Initialize django-environ
 env = environ.Env(
     # set casting, default value
@@ -38,12 +38,12 @@ MEDIA_URL  = '/media/'
 # SECURITY WARNING: don't run with debug turned on in production!
 #DEBUG = True
 
-#ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 
 # SECURITY
 SECRET_KEY = env("SECRET_KEY")
 DEBUG = env("DEBUG")
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
+
 
 
 # Application definition
@@ -72,7 +72,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',  # ← add this
+    'debug_toolbar.middleware.DebugToolbarMiddleware',  
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -132,13 +133,13 @@ DATABASES = {
 }
 
 
-if not DEBUG:
-    INSTALLED_APPS += ["storages"]
-    AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
-    AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME")
-    AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
-    AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
-    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+# if not DEBUG:
+#     INSTALLED_APPS += ["storages"]
+#     AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
+#     AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME")
+#     AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
+#     AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
+#     DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
 
 # Password validation
@@ -176,8 +177,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
-    STATIC_PATH,
+    BASE_DIR / 'static'
 ]
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -245,5 +247,7 @@ SIDEBAR_MENU = {
         { 'label': 'Post New Vacancy', 'url_name': 'jobposts:create'    },
     ],
 }
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 

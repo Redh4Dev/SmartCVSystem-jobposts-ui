@@ -156,5 +156,9 @@ python manage.py createsuperuser
 python manage.py runserver
 
 
+# 9. Run this command to generate static files 
+python manage.py collectstatic
+
+
 
 

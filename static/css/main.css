@@ -21,3 +21,8 @@ html, body {
 .page-wrapper main {
   flex: 1; /* grow to fill space between header & footer */
 }
+/* 2) Apply Merienda *only* to the .navbar-brand */
+.navbar-brand {
+  font-family: "Mulish", sans-serif !important;
+  font-weight: 600;
+}

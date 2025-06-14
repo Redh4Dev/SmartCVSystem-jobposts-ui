@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Page Not Found | {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="container text-center my-5">
+  <img src="{% static 'img/error404.png' %}" alt="Not Found" class="mb-4" style="max-width:200px;">
+  <h1 class="display-4">404</h1>
+  <p class="lead">Sorry, we couldn’t find the page you’re looking for.</p>
+  <a href="/dashboard" class="btn btn-primary mt-3">Go Home</a>
+</div>
+{% endblock %}

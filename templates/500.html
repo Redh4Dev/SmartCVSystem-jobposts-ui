@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Server Error | {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="container text-center my-5">
+  <img src="{% static 'img/500-illustration.svg' %}" alt="Server Error" class="mb-4" style="max-width:200px;">
+  <h1 class="display-4">500</h1>
+  <p class="lead">Whoops—something went wrong on our end.</p>
+  <a href="/" class="btn btn-primary mt-3">Return Home</a>
+</div>
+{% endblock %}
