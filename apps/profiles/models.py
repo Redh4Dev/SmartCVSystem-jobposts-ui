@@ -1,5 +1,6 @@
 from django.db import models
 from apps.authx.models import User
+
 class ResumeFile(models.Model):
     """
     Stores uploaded CVs for a user.

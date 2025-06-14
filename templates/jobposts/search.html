@@ -1,6 +1,6 @@
-{% extends "base.html" %} {% load markdownify job_extras %} 
-{% block title %}Job Search | {{ site_name }}{% endblock %} {% block content %}
-<div class="container my-5">
+{% extends "base.html" %} {% load markdownify job_extras %} {% block title %}Job
+Search | {{ site_name }}{% endblock %} {% block content %}
+<div class="container mb-5">
   <h2>Find Jobs</h2>
 
   <form method="get" class="row g-2 mb-4">
@@ -120,7 +120,40 @@
     </div>
     {% endwith %} {% endfor %}
   </div>
-  {% else %}
+  {% if jobs.has_other_pages %}
+  <nav aria-label="Job search pagination">
+    <ul class="pagination justify-content-center mt-4">
+      {# Previous button #}
+      <li class="page-item {% if not jobs.has_previous %}disabled{% endif %}">
+        <a
+          class="page-link"
+          href="?q={{ query|urlencode }}&page={{ jobs.previous_page_number }}"
+          tabindex="-1"
+        >
+          &laquo; Prev
+        </a>
+      </li>
+
+      {# Page numbers (show up to 5 around current) #} {% for num in
+      jobs.paginator.page_range %} {% if num >= jobs.number|add:-2 and num <=
+      jobs.number|add:2 %}
+      <li class="page-item {% if num == jobs.number %}active{% endif %}">
+        <a class="page-link" href="?q={{ query|urlencode }}&page={{ num }}">
+          {{ num }}
+        </a>
+      </li>
+      {% endif %} {% endfor %} {# Next button #}
+      <li class="page-item {% if not jobs.has_next %}disabled{% endif %}">
+        <a
+          class="page-link"
+          href="?q={{ query|urlencode }}&page={{ jobs.next_page_number }}"
+        >
+          Next &raquo;
+        </a>
+      </li>
+    </ul>
+  </nav>
+  {% endif %} {% else %}
   <p>No jobs found.</p>
   {% endif %}
 </div>

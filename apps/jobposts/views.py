@@ -3,14 +3,16 @@ from django.urls           import reverse_lazy
 from django.contrib        import messages
 
 from apps.authx.auth_utils import SessionRequiredMixin
-from .models               import JobPost
+
 from .forms                import JobPostForm
 from django.views.generic import ListView, CreateView, UpdateView
 from .models               import JobPost, UserJob
+from ..profiles.models import ResumeFile
 from django.db.models      import Count, Q
 from django.utils import timezone
 from django.shortcuts import render, redirect
 from django.views import View
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 class JobPostDetailView(SessionRequiredMixin, DetailView):
@@ -27,12 +29,27 @@ class JobPostDetailView(SessionRequiredMixin, DetailView):
         job_id = self.get_object().JobPostID
         uid    = request.session['user_id']
 
+        if action == 'apply':
+            has_resume = ResumeFile.objects.filter(
+                UserID_id=uid,
+                IsSelected=True
+            ).exists()
+
+            if not has_resume:
+                messages.warning(
+                    request,
+                    "Please upload and select one of your resumes before applying."
+                )
+                return redirect(f"{request.path}?q={request.POST.get('q','')}")
+            
+    
         uj, created = UserJob.objects.get_or_create(
             User_id=uid,
             JobPost_id=job_id,
             defaults={'CreatedAt': timezone.now()}
         )
 
+        
         if action == 'apply':
             uj.IsApplied = True
             uj.IsSaved   = False
@@ -43,6 +60,8 @@ class JobPostDetailView(SessionRequiredMixin, DetailView):
             uj.IsApplied = False
             uj.save()
             messages.success(request, "Job saved for later.")
+
+        
         return redirect('jobposts:detail', pk=job_id)
 class SavedJobsView(SessionRequiredMixin, ListView):
     """
@@ -154,6 +173,7 @@ class JobPostCandidateJobSearchView(SessionRequiredMixin, View):
     def get(self, request):
         print("sdsd")
         q = request.GET.get('q', '').strip()
+        page = request.GET.get('page', 1)
         # base queryset: active jobs
         qs = JobPost.objects.filter(IsActive=True)
         if q:
@@ -161,6 +181,16 @@ class JobPostCandidateJobSearchView(SessionRequiredMixin, View):
                 Q(Title__icontains=q) |
                 Q(Description__icontains=q)
             )
+
+        # paginate at 10 jobs per page
+        paginator = Paginator(qs.order_by('-CreatedAt'), 10)
+        try:
+            jobs = paginator.page(page)
+        except PageNotAnInteger:
+            jobs = paginator.page(1)
+        except EmptyPage:
+            jobs = paginator.page(paginator.num_pages)
+                                  
         # gather user’s existing UserJob records
         uid = request.session['user_id']
         uj_qs = UserJob.objects.filter(User_id=uid)
@@ -170,6 +200,7 @@ class JobPostCandidateJobSearchView(SessionRequiredMixin, View):
             'jobs': qs.order_by('-CreatedAt'),
             'status_map': status_map,
             'query': q,
+            'paginator':  paginator,
         })
 
     def post(self, request):
@@ -177,11 +208,24 @@ class JobPostCandidateJobSearchView(SessionRequiredMixin, View):
         job_id = int(request.POST.get('job_id'))
         uid    = request.session['user_id']
 
+        if action == 'apply':
+            has_resume = ResumeFile.objects.filter(
+                UserID_id=uid,
+                IsSelected=True
+            ).exists()
+
+            if not has_resume:
+                messages.warning(
+                    request,
+                    "Please upload and select one of your resumes before applying."
+                )
+                return redirect(f"{request.path}?q={request.POST.get('q','')}")
+            
         uj, created = UserJob.objects.get_or_create(
             User_id=uid, JobPost_id=job_id,
             defaults={'CreatedAt': timezone.now()}
         )
-
+    
         if action == 'apply':
             uj.IsApplied = True
             uj.IsSaved   = False
