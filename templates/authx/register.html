@@ -70,15 +70,11 @@
             </div>
 
             {# --- account type dropdown --- #}
-            <div class="mb-3">
-              <label for="role" class="form-label">Account Type</label>
-              <select name="role" id="role" class="form-select" required>
-                <option value="">— Select your role —</option>
-                {% for role in roles %}
-                  <option value="{{ role.role_id }}">{{ role.role_name|capfirst }}</option>
-                {% endfor %}
-              </select>
-            </div>
+           <div class="mb-3">
+  {{ form.role.label_tag }}
+  {{ form.role }}
+  {{ form.role.errors }}
+</div>
 
             {# --- company details, hidden by default --- #}
             <div id="company-fields" style="display: none;">
