@@ -3,6 +3,7 @@ from ..authx.auth_utils import SessionRequiredMixin
 from ..authx.models     import User, UsersRole
 from django.views       import View
 from apps.jobposts.models import JobPost, UserJob
+from apps.profiles.models import ResumeFile
 from django.utils import timezone
 # Create your views here.
 def landing(request):
@@ -30,24 +31,37 @@ class DashboardView(SessionRequiredMixin, View):
         user    = User.objects.get(users_id=user_id)
 
         # Fetch all Roles assigned to this user
-        role_links = UsersRole.objects.filter(user_id=user_id).select_related('role')
-        roles      = [rl.role for rl in role_links]
+        
+        # flatten list of role names
+        roles = [ur.role.role_name.lower() for ur in UsersRole.objects.filter(user_id=user_id).select_related('role')]
 
-        total_jobs = JobPost.objects.filter(Recruiter_id=user_id).count()
-        expired_jobs = JobPost.objects.filter(
-            created_by_id=user_id,
-            ApplicationDeadline__lt=timezone.now()
-        ).count()
-        total_apps = UserJob.objects.filter(
-            JobPost__created_by_id=user_id,
-            IsApplied=True
-        ).count()
-        print(total_jobs)
-        print("sdsd")
-        return render(request, 'dashboard.html', {
+        context = {
             'user':  user,
             'roles': roles,
-            'total_jobs':   total_jobs,
-            'expired_jobs': expired_jobs,
-            'total_apps':   total_apps,
-        })
+        }
+
+        if 'candidate' in roles:
+            # Candidate metrics
+            resumes_qs     = ResumeFile.objects.filter(UserID_id=user_id)
+            context.update({
+                'resume_count':  resumes_qs.count(),
+                'has_active':    resumes_qs.filter(IsSelected=True).exists(),
+                'applied_count': UserJob.objects.filter(User_id=user_id, IsApplied=True).count(),
+                'saved_count':   UserJob.objects.filter(User_id=user_id, IsSaved=True).count(),
+            })
+
+        if 'company_hr' in roles or 'recruiter' in roles:
+            # Company HR / Recruiter metrics
+            context.update({
+                'total_jobs':   JobPost.objects.filter(Recruiter_id=user_id).count(),
+                'expired_jobs': JobPost.objects.filter(
+                    Recruiter_id=user_id,
+                    ApplicationDeadline__lt=timezone.now()
+                ).count(),
+                'total_apps':   UserJob.objects.filter(
+                    JobPost__Recruiter_id=user_id,
+                    IsApplied=True
+                ).count(),
+            })
+
+        return render(request, 'common/dashboard.html', context)

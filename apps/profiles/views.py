@@ -67,25 +67,38 @@ class DashboardView(SessionRequiredMixin, View):
         user    = User.objects.get(users_id=user_id)
 
         # Fetch all Roles assigned to this user
-        role_links = UsersRole.objects.filter(user_id=user_id).select_related('role')
-        roles      = [rl.role for rl in role_links]
-        print(roles)
-        total_jobs = JobPost.objects.filter(Recruiter_id=user_id).count()
-        expired_jobs = JobPost.objects.filter(
-            Recruiter_id=user_id,
-            ApplicationDeadline__lt=timezone.now()
-        ).count()
-        total_apps = UserJob.objects.filter(
-            JobPost__Recruiter_id=user_id,
-            IsApplied=True
-        ).count()
-        return render(request, 'dashboard.html', {
+        roles = [ur.role.role_name.lower() for ur in UsersRole.objects.filter(user_id=user_id).select_related('role')]
+
+        context = {
             'user':  user,
             'roles': roles,
-            'total_jobs':   total_jobs,
-            'expired_jobs': expired_jobs,
-            'total_apps':   total_apps,
-        })
+        }
+        print(roles)
+        if 'candidate' in roles:
+            # Candidate metrics
+            resumes_qs     = ResumeFile.objects.filter(UserID_id=user_id)
+            context.update({
+                'resume_count':  resumes_qs.count(),
+                'has_active':    resumes_qs.filter(IsSelected=True).exists(),
+                'applied_count': UserJob.objects.filter(User_id=user_id, IsApplied=True).count(),
+                'saved_count':   UserJob.objects.filter(User_id=user_id, IsSaved=True).count(),
+            })
+
+        if 'company hr' in roles or 'recruiter' in roles:
+            # Company HR / Recruiter metrics
+            context.update({
+                'total_jobs':   JobPost.objects.filter(Recruiter_id=user_id).count(),
+                'expired_jobs': JobPost.objects.filter(
+                    Recruiter_id=user_id,
+                    ApplicationDeadline__lt=timezone.now()
+                ).count(),
+                'total_apps':   UserJob.objects.filter(
+                    JobPost__Recruiter_id=user_id,
+                    IsApplied=True
+                ).count(),
+            })
+        print(context)
+        return render(request, 'dashboard.html', context)
 
 class ChangePasswordView(SessionRequiredMixin,View):
     def get(self, request):

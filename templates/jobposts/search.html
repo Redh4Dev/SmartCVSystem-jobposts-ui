@@ -1,14 +1,15 @@
-{% extends "base.html" %} {% load markdownify job_extras %} {% block title %}Job
-Search | {{ site_name }}{% endblock %} {% block content %}
+{% extends "base.html" %}
+{% load markdownify job_extras %}
+{% block title %}Job Search | {{ site_name }}{% endblock %}
+
+{% block content %}
 <div class="container mb-5">
   <h2>Find Jobs</h2>
 
   <form method="get" class="row g-2 mb-4">
     <div class="col-md-10">
       <input
-        type="text"
-        name="q"
-        value="{{ query }}"
+        type="text" name="q" value="{{ query }}"
         class="form-control"
         placeholder="Search by title, description, skills…"
       />
@@ -19,41 +20,26 @@ Search | {{ site_name }}{% endblock %} {% block content %}
   </form>
 
   {% if jobs %}
-  <div class="list-group">
-    {% for job in jobs %} {% with uj=status_map|get_item:job.JobPostID %}
-    <div class="list-group-item mb-4 shadow-sm p-4 rounded">
-      <div class="d-flex justify-content-between align-items-start">
-        <h5 class="mb-1">
-          <a href="{% url 'jobposts:detail' job.JobPostID %}">
-            {{ job.Title }}
-          </a>
-        </h5>
-        <small class="text-muted">{{ job.CreatedAt|date:"Y-m-d" }}</small>
-      </div>
+    <div class="list-group">
+      {% for job in jobs %}
+        {% with uj=status_map|get_item:job.JobPostID %}
+          <div class="list-group-item mb-4 shadow-sm p-4 rounded">
+            <div class="d-flex justify-content-between align-items-start">
+              <h5 class="mb-1">
+                <a href="{% url 'jobposts:detail' job.JobPostID %}">
+                  {{ job.Title }}
+                </a>
+              </h5>
+              <small class="text-muted">{{ job.CreatedAt|date:"d-m-Y" }}</small>
+            </div>
 
-      {# Location, Type, Remote, Salary #}
-      <p class="mb-2">
-        <strong>Location:</strong> {{ job.Location }}<br />
-        <strong>Employment:</strong> {{ job.get_EmploymentType_display }}<br />
-        <strong>Remote:</strong> {{ job.RemoteOption }}<br />
-        {% if job.MinSalary or job.MaxSalary %}
-        <strong>Salary:</strong>
-        {{ job.MinSalary|default:"—" }} – {{ job.MaxSalary|default:"—" }}
-        <small>per annum</small><br />
-        {% endif %} {% if job.ApplicationDeadline %}
-        <strong>Deadline:</strong> {{ job.ApplicationDeadline|date:"Y-m-d" }}<br />
-        {% endif %}
-      </p>
-
-      {# Industry, Experience, Education #}
+            {# Industry, Experience, Education #}
       <p class="mb-2">
         {% if job.Industry %}
         <strong>Industry:</strong> {{ job.Industry }}<br />
         {% endif %}
-        <strong>Experience Level:</strong> {{ job.get_ExperienceLevel_display
-        }}<br />
-        <strong>Education Required:</strong> {{ job.get_EducationLevel_display
-        }}
+        <strong>Experience Level:</strong> {{ job.get_ExperienceLevel_display}}<br />
+        <strong>Education Required:</strong> {{ job.get_EducationLevel_display }}
       </p>
 
       {# Description and Skills (Markdownified) #}
@@ -72,89 +58,71 @@ Search | {{ site_name }}{% endblock %} {% block content %}
         {{ job.Benefits|markdownify|safe }}
       </div>
       {% endif %} {# Apply/Save buttons #}
-      <div class="d-flex gap-2">
-        <form method="post" class="d-inline">
-          {% csrf_token %}
-          <input type="hidden" name="job_id" value="{{ job.JobPostID }}" />
-          <input type="hidden" name="q" value="{{ query }}" />
-          <button
-            type="submit"
-            name="action"
-            value="apply"
-            class="btn btn-sm {% if uj and uj.IsApplied %}btn-secondary disabled{% else %}btn-success{% endif %}"
-            {%
-            if
-            uj
-            and
-            uj.IsApplied
-            %}disabled{%
-            endif
-            %}
-          >
-            {% if uj and uj.IsApplied %}Applied{% else %}Apply Now{% endif %}
-          </button>
-        </form>
 
-        <form method="post" class="d-inline">
-          {% csrf_token %}
-          <input type="hidden" name="job_id" value="{{ job.JobPostID }}" />
-          <input type="hidden" name="q" value="{{ query }}" />
-          <button
-            type="submit"
-            name="action"
-            value="save"
-            class="btn btn-sm {% if uj and uj.IsSaved %}btn-warning disabled{% else %}btn-outline-warning{% endif %}"
-            {%
-            if
-            uj
-            and
-            uj.IsSaved
-            %}disabled{%
-            endif
-            %}
-          >
-            {% if uj and uj.IsSaved %}Saved{% else %}Save for Later{% endif %}
-          </button>
-        </form>
-      </div>
+            <div class="d-flex gap-2">
+              <form method="post" class="d-inline">
+                {% csrf_token %}
+                <input type="hidden" name="job_id" value="{{ job.JobPostID }}" />
+                <input type="hidden" name="q" value="{{ query }}" />
+                <button
+                  type="submit" name="action" value="apply"
+                  class="btn btn-sm {% if uj and uj.IsApplied %}btn-secondary{% else %}btn-success{% endif %}"
+                  {% if uj and uj.IsApplied %}disabled{% endif %}
+                >
+                  {% if uj and uj.IsApplied %}Applied{% else %}Apply Now{% endif %}
+                </button>
+              </form>
+
+              <form method="post" class="d-inline">
+                {% csrf_token %}
+                <input type="hidden" name="job_id" value="{{ job.JobPostID }}" />
+                <input type="hidden" name="q" value="{{ query }}" />
+                <button
+                  type="submit" name="action" value="save"
+                  class="btn btn-sm {% if uj and uj.IsSaved %}btn-warning{% else %}btn-outline-warning{% endif %}"
+                  {% if uj and uj.IsSaved %}disabled{% endif %}
+                >
+                  {% if uj and uj.IsSaved %}Saved{% else %}Save for Later{% endif %}
+                </button>
+              </form>
+            </div>
+          </div>
+        {% endwith %}
+      {% endfor %}
     </div>
-    {% endwith %} {% endfor %}
-  </div>
-  {% if jobs.has_other_pages %}
-  <nav aria-label="Job search pagination">
-    <ul class="pagination justify-content-center mt-4">
-      {# Previous button #}
-      <li class="page-item {% if not jobs.has_previous %}disabled{% endif %}">
-        <a
-          class="page-link"
-          href="?q={{ query|urlencode }}&page={{ jobs.previous_page_number }}"
-          tabindex="-1"
-        >
-          &laquo; Prev
-        </a>
-      </li>
 
-      {# Page numbers (show up to 5 around current) #} {% for num in
-      jobs.paginator.page_range %} {% if num >= jobs.number|add:-2 and num <=
-      jobs.number|add:2 %}
-      <li class="page-item {% if num == jobs.number %}active{% endif %}">
-        <a class="page-link" href="?q={{ query|urlencode }}&page={{ num }}">
-          {{ num }}
-        </a>
-      </li>
-      {% endif %} {% endfor %} {# Next button #}
-      <li class="page-item {% if not jobs.has_next %}disabled{% endif %}">
-        <a
-          class="page-link"
-          href="?q={{ query|urlencode }}&page={{ jobs.next_page_number }}"
-        >
-          Next &raquo;
-        </a>
-      </li>
-    </ul>
-  </nav>
-  {% endif %} {% else %}
-  <p>No jobs found.</p>
+    {% if jobs.has_other_pages %}
+      <nav aria-label="Job search pagination">
+        <ul class="pagination justify-content-center mt-4">
+          
+          <li class="page-item{% if not jobs.has_previous %} disabled{% endif %}">
+            <a class="page-link"
+               href="?q={{ query|urlencode }}&page={{ jobs.previous_page_number }}"
+               tabindex="-1"
+            >&laquo; Prev</a>
+          </li>
+
+          {% for num in jobs.paginator.page_range %}
+            {% if num >= jobs.number|add:-2 and num <= jobs.number|add:2 %}
+              <li class="page-item{% if num == jobs.number %} active{% endif %}">
+                <a class="page-link"
+                   href="?q={{ query|urlencode }}&page={{ num }}">{{ num }}</a>
+              </li>
+            {% endif %}
+          {% endfor %}
+
+          <li class="page-item{% if not jobs.has_next %} disabled{% endif %}">
+            <a class="page-link"
+               href="?q={{ query|urlencode }}&page={{ jobs.next_page_number }}"
+            >Next &raquo;</a>
+          </li>
+
+        </ul>
+      </nav>
+    {% endif %}
+
+  {% else %}
+    <p>No jobs found.</p>
   {% endif %}
 </div>
 {% endblock %}

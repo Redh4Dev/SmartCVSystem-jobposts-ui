@@ -1,77 +1,211 @@
-
-{% extends "base.html" %}
-{% block title %}Dashboard | {{ site_name }}{% endblock %}
-
-{% block content %}
-    {% block dashboard_content %}
-            <div class="pt-4 pb-2 mb-3 border-bottom">
-              <h2>Welcome back, {{ user.first_name }}!</h2>
-            </div>
-            <p>Select an option from the sidebar to get started.</p>
-    {% endblock %}
-    {% if 'recruiter' in request.session.roles or 'company hr' in request.session.roles %}     
-      <div class="row gy-4">
-
-        <!-- Total Jobs Posted -->
-        <div class="col-12 col-md-4">
-          <div class="card border-primary h-100">
-            <div class="card-body d-flex flex-column justify-content-between">
-              <div>
-                <h6 class="card-subtitle text-uppercase text-primary mb-2">
-                  Jobs Posted
-                </h6>
-                <h3 class="card-title">{{ total_jobs }}</h3>
-              </div>
-              <div class="text-end">
-                <i class="fa fa-briefcase fa-2x text-primary"></i>
-              </div>
-            </div>
-            <div class="card-footer bg-transparent">
-              <a href="{% url 'jobposts:list' %}" class="small">Manage jobs &rarr;</a>
-            </div>
-          </div>
+{% extends "base.html" %} 
+{% block title %}Dashboard | {{ site_name }}{%endblock %} 
+{% block content %} {% block dashboard_content %}
+<div class="pt-4 pb-2 mb-3 border-bottom">
+  <h2>Welcome back, {{ user.first_name }}!</h2>
+</div>
+<p>Select an option from the sidebar to get started.</p>
+{% endblock %} 
+{% if 'recruiter' in request.session.roles or 'company hr' in request.session.roles %}
+<div class="row gy-4">
+  <!-- Total Jobs Posted -->
+  <div class="col-12 col-md-4">
+    <div class="card border-primary h-100">
+      <div class="card-body d-flex flex-column justify-content-between">
+        <div>
+          <h6 class="card-subtitle text-uppercase text-primary mb-2">
+            Jobs Posted
+          </h6>
+          <h3 class="card-title">{{ total_jobs }}</h3>
         </div>
-
-        <!-- Expired Jobs -->
-        <div class="col-12 col-md-4">
-          <div class="card border-danger h-100">
-            <div class="card-body d-flex flex-column justify-content-between">
-              <div>
-                <h6 class="card-subtitle text-uppercase text-danger mb-2">
-                  Expired Jobs
-                </h6>
-                <h3 class="card-title">{{ expired_jobs }}</h3>
-              </div>
-              <div class="text-end">
-                <i class="fa fa-calendar-times fa-2x text-danger"></i>
-              </div>
-            </div>
-            <div class="card-footer bg-transparent">
-              <a href="{% url 'jobposts:list' %}?filter=expired" class="small">View expired &rarr;</a>
-            </div>
-          </div>
+        <div class="text-end">
+          <i class="fa fa-briefcase fa-2x text-primary"></i>
         </div>
-
-        <!-- Total Applications -->
-        <div class="col-12 col-md-4">
-          <div class="card border-success h-100">
-            <div class="card-body d-flex flex-column justify-content-between">
-              <div>
-                <h6 class="card-subtitle text-uppercase text-success mb-2">
-                  Applications
-                </h6>
-                <h3 class="card-title">{{ total_apps }}</h3>
-              </div>
-              <div class="text-end">
-                <i class="fa fa-file-alt fa-2x text-success"></i>
-              </div>
-            </div>
-            <div class="card-footer bg-transparent">
-              <a href="#" class="small">View all &rarr;</a>
-            </div>
-          </div>
-        </div>
-
       </div>
-    {% endif %}
-{% endblock %}
+      <div class="card-footer bg-transparent">
+        <a href="{% url 'jobposts:list' %}" class="small">Manage jobs &rarr;</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Expired Jobs -->
+  <div class="col-12 col-md-4">
+    <div class="card border-danger h-100">
+      <div class="card-body d-flex flex-column justify-content-between">
+        <div>
+          <h6 class="card-subtitle text-uppercase text-danger mb-2">
+            Expired Jobs
+          </h6>
+          <h3 class="card-title">{{ expired_jobs }}</h3>
+        </div>
+        <div class="text-end">
+          <i class="fa fa-calendar-times fa-2x text-danger"></i>
+        </div>
+      </div>
+      <div class="card-footer bg-transparent">
+        <a href="{% url 'jobposts:list' %}?filter=expired" class="small"
+          >View expired &rarr;</a
+        >
+      </div>
+    </div>
+  </div>
+
+  <!-- Total Applications -->
+  <div class="col-12 col-md-4">
+    <div class="card border-success h-100">
+      <div class="card-body d-flex flex-column justify-content-between">
+        <div>
+          <h6 class="card-subtitle text-uppercase text-success mb-2">
+            Applications
+          </h6>
+          <h3 class="card-title">{{ total_apps }}</h3>
+        </div>
+        <div class="text-end">
+          <i class="fa fa-file-alt fa-2x text-success"></i>
+        </div>
+      </div>
+      <div class="card-footer bg-transparent">
+        <a href="#" class="small">View all &rarr;</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% else %}
+<!-- 1) Metrics Cards -->
+<div class="row g-4 mb-5">
+  <!-- Resumes -->
+  <div class="col-sm-6 col-md-4 col-lg-2">
+    <div class="card border-info h-100">
+      <div class="card-body d-flex justify-content-between">
+        <div>
+          <small class="text-uppercase text-info">Resumes</small>
+          <h3 class="fw-bold">{{ resume_count }}</h3>
+        </div>
+        <i class="fa fa-file-alt fa-2x text-info"></i>
+      </div>
+    </div>
+  </div>
+  <!-- Selected Resume -->
+  <div class="col-sm-6 col-md-4 col-lg-2">
+    <div class="card border-primary h-100">
+      <div class="card-body d-flex justify-content-between">
+        <div>
+          <small class="text-uppercase text-primary">Active Resume</small>
+          <h3 class="fw-bold">
+            {% if has_active %}Yes{% else %}No{% endif %}
+          </h3>
+        </div>
+        <i class="fa fa-check-circle fa-2x text-primary"></i>
+      </div>
+    </div>
+  </div>
+  <!-- Applications -->
+  <div class="col-sm-6 col-md-4 col-lg-2">
+    <div class="card border-success h-100">
+      <div class="card-body d-flex justify-content-between">
+        <div>
+          <small class="text-uppercase text-success">Applications</small>
+          <h3 class="fw-bold">{{ applied_count }}</h3>
+        </div>
+        <i class="fa fa-paper-plane fa-2x text-success"></i>
+      </div>
+    </div>
+  </div>
+  <!-- In Review -->
+  <div class="col-sm-6 col-md-4 col-lg-2">
+    <div class="card border-warning h-100">
+      <div class="card-body d-flex justify-content-between">
+        <div>
+          <small class="text-uppercase text-warning">In Review</small>
+          <h3 class="fw-bold">{{ in_review }}</h3>
+        </div>
+        <i class="fa fa-hourglass-half fa-2x text-warning"></i>
+      </div>
+    </div>
+  </div>
+  <!-- Saved Jobs -->
+  <div class="col-sm-6 col-md-4 col-lg-2">
+    <div class="card border-secondary h-100">
+      <div class="card-body d-flex justify-content-between">
+        <div>
+          <small class="text-uppercase text-secondary">Saved Jobs</small>
+          <h3 class="fw-bold">{{ saved_count }}</h3>
+        </div>
+        <i class="fa fa-bookmark fa-2x text-secondary"></i>
+      </div>
+    </div>
+  </div>
+  <!-- Profile % -->
+  <div class="col-sm-6 col-md-4 col-lg-2">
+    <div class="card border-dark h-100">
+      <div class="card-body d-flex flex-column justify-content-between">
+        <div>
+          <small class="text-uppercase text-dark">Profile</small>
+          <h3 class="fw-bold">{{ profile_pct }}%</h3>
+        </div>
+        <i class="fa fa-user-circle fa-2x text-dark"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 2) Recent Activity & Recommendations -->
+<div class="row gy-5">
+  <div class="col-lg-6">
+    <h5>Recent Applications</h5>
+    <ul class="list-group">
+      {% for a in recent_apps %}
+      <li class="list-group-item d-flex justify-content-between">
+        <a href="{% url 'jobposts:detail' a.JobPost__pk %}">
+          {{ a.JobPost__Title }}
+        </a>
+        <small>{{ a.CreatedAt|date:"Y-m-d" }}</small>
+      </li>
+      {% empty %}
+      <li class="list-group-item text-center text-muted">
+        No recent applications.
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="col-lg-6">
+    <h5>Recommended Jobs</h5>
+    <div class="row row-cols-1 row-cols-md-2 g-3">
+      {% for job in recommended_jobs %}
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-body">
+            <h6>
+              <a href="{% url 'jobposts:detail' job.pk %}"> {{ job.Title }} </a>
+            </h6>
+            <p class="mb-0">
+              <small class="text-muted">{{ job.Location }}</small>
+            </p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- 3) Upcoming Interviews -->
+{% if upcoming_interviews %}
+<div class="mt-5">
+  <h5>Upcoming Interviews</h5>
+  <ul class="list-group">
+    {% for iv in upcoming_interviews %}
+    <li class="list-group-item">
+      {{ iv.job.Title }} — {{ iv.scheduled_for|date:"M j, Y @ H:i" }}
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+<!-- 4) Tip -->
+<div class="alert alert-info mt-5">
+  <strong>Tip:</strong> Complete your profile to attract more recruiters!
+</div>
+{% endif %} {% endblock %}
