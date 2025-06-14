@@ -2,6 +2,8 @@ from django.shortcuts import render
 from ..authx.auth_utils import SessionRequiredMixin
 from ..authx.models     import User, UsersRole
 from django.views       import View
+from apps.jobposts.models import JobPost, UserJob
+from django.utils import timezone
 # Create your views here.
 def landing(request):
     """
@@ -31,7 +33,21 @@ class DashboardView(SessionRequiredMixin, View):
         role_links = UsersRole.objects.filter(user_id=user_id).select_related('role')
         roles      = [rl.role for rl in role_links]
 
+        total_jobs = JobPost.objects.filter(Recruiter_id=user_id).count()
+        expired_jobs = JobPost.objects.filter(
+            created_by_id=user_id,
+            ApplicationDeadline__lt=timezone.now()
+        ).count()
+        total_apps = UserJob.objects.filter(
+            JobPost__created_by_id=user_id,
+            IsApplied=True
+        ).count()
+        print(total_jobs)
+        print("sdsd")
         return render(request, 'dashboard.html', {
             'user':  user,
             'roles': roles,
+            'total_jobs':   total_jobs,
+            'expired_jobs': expired_jobs,
+            'total_apps':   total_apps,
         })

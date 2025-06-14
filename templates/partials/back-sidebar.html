@@ -1,0 +1,65 @@
+{% load static %}
+<div class="col-12 col-md-3 col-lg-2 d-none d-md-block">
+  <nav class="position-sticky bg-light sidebar" style="top: 80px">
+    <div class="sidebar-sticky pt-3">
+      <ul class="nav flex-column">
+        <li class="nav-item mb-2">
+          <a class="nav-link active" href="{% url 'profiles:dashboard' %}">
+            Overview
+          </a>
+        </li>
+
+        {% if 'recruiter' in request.session.roles %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'jobposts:list' %}"> Manage Jobs </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'jobposts:applicants' job_id=0 %}">
+            View Applicants
+          </a>
+        </li>
+        {% endif %} {# Candidate #} {% if 'candidate' in request.session.roles  %}
+       
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'jobposts:search' %}">
+            Search Jobs
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'jobposts:my_applications' %}">
+            My Applications
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'jobposts:saved_jobs' %}">
+            Saved Jobs
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'profiles:resume' %}"> My Resume </a>
+        </li>
+        {% endif %} {# Company HR #} {% if 'company hr' in request.session.roles  %}
+       
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'company:overview' %}">
+            Company Profile
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'company:onboard' %}">
+            Onboard Talent
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'jobposts:list' %}"> Job Listing </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'jobposts:create' %}">
+            Post New Vacancy
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </nav>
+</div>

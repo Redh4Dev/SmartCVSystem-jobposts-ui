@@ -3,92 +3,75 @@
 {% block title %}Dashboard | {{ site_name }}{% endblock %}
 
 {% block content %}
-<div class="container-fluid pt-5">
-  <div class="row">
+    {% block dashboard_content %}
+            <div class="pt-4 pb-2 mb-3 border-bottom">
+              <h2>Welcome back, {{ user.first_name }}!</h2>
+            </div>
+            <p>Select an option from the sidebar to get started.</p>
+    {% endblock %}
+    {% if 'recruiter' in request.session.roles or 'company hr' in request.session.roles %}     
+      <div class="row gy-4">
 
-    {# ——— Sidebar nav ——— #}
-    <nav class="col-md-3 d-none d-md-block bg-light sidebar">
-      <div class="sidebar-sticky pt-3">
-        <ul class="nav flex-column">
-          <li class="nav-item">
-            <a class="nav-link active" href="{% url 'profiles:dashboard' %}">
-              Overview
-            </a>
-          </li>
-
-          {% for role in roles %}
-            {% if role.role_name == 'recruiter' %}
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'recruiter:job_list' %}">
-                  Manage Jobs
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'recruiter:applicants' %}">
-                  View Applicants
-                </a>
-              </li>
-
-            {% elif role.role_name == 'candidate' %}
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'jobposts:search' %}">
-                  Search Jobs
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'jobposts:my_applications' %}">
-                  My Applications
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'jobposts:saved_jobs' %}">
-  Saved Jobs
-</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'profiles:resume' %}">
-                  My Resume
-                </a>
-              </li>
-
-            {% elif role.role_name == 'Company HR' %}
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'company:overview' %}">
-                  Company Profile
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'company:onboard' %}">
-                  Onboard Talent
-                </a>
-              </li>
-               <li class="nav-item">
-                <a class="nav-link" href="{% url 'jobposts:list' %}">
-                  Job Listing
-                </a>
-              </li>
-                <li class="nav-item">
-                <a class="nav-link" href="{% url 'jobposts:create' %}">
-                  Post New Vacany
-                </a>
-              </li>
-
-            {% endif %}
-          {% endfor %}
-        </ul>
-      </div>
-    </nav>
-
-    {# ——— Main content ——— #}
-    <main role="main" class="col-md-9 ml-sm-auto px-4">
-      {% block dashboard_content %}
-        <div class="pt-4 pb-2 mb-3 border-bottom">
-          <h2>Welcome back, {{ user.first_name }}!</h2>
+        <!-- Total Jobs Posted -->
+        <div class="col-12 col-md-4">
+          <div class="card border-primary h-100">
+            <div class="card-body d-flex flex-column justify-content-between">
+              <div>
+                <h6 class="card-subtitle text-uppercase text-primary mb-2">
+                  Jobs Posted
+                </h6>
+                <h3 class="card-title">{{ total_jobs }}</h3>
+              </div>
+              <div class="text-end">
+                <i class="fa fa-briefcase fa-2x text-primary"></i>
+              </div>
+            </div>
+            <div class="card-footer bg-transparent">
+              <a href="{% url 'jobposts:list' %}" class="small">Manage jobs &rarr;</a>
+            </div>
+          </div>
         </div>
-        <p>Select an option from the sidebar to get started.</p>
-      {% endblock %}
-    </main>
 
-  </div>
-</div>
+        <!-- Expired Jobs -->
+        <div class="col-12 col-md-4">
+          <div class="card border-danger h-100">
+            <div class="card-body d-flex flex-column justify-content-between">
+              <div>
+                <h6 class="card-subtitle text-uppercase text-danger mb-2">
+                  Expired Jobs
+                </h6>
+                <h3 class="card-title">{{ expired_jobs }}</h3>
+              </div>
+              <div class="text-end">
+                <i class="fa fa-calendar-times fa-2x text-danger"></i>
+              </div>
+            </div>
+            <div class="card-footer bg-transparent">
+              <a href="{% url 'jobposts:list' %}?filter=expired" class="small">View expired &rarr;</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total Applications -->
+        <div class="col-12 col-md-4">
+          <div class="card border-success h-100">
+            <div class="card-body d-flex flex-column justify-content-between">
+              <div>
+                <h6 class="card-subtitle text-uppercase text-success mb-2">
+                  Applications
+                </h6>
+                <h3 class="card-title">{{ total_apps }}</h3>
+              </div>
+              <div class="text-end">
+                <i class="fa fa-file-alt fa-2x text-success"></i>
+              </div>
+            </div>
+            <div class="card-footer bg-transparent">
+              <a href="#" class="small">View all &rarr;</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    {% endif %}
 {% endblock %}

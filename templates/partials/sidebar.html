@@ -1,0 +1,22 @@
+<div class="col-12 col-md-3 col-lg-2 d-none d-md-block">
+  <nav class="position-sticky bg-light sidebar" style="top: 80px">
+    <div class="sidebar-sticky pt-3">
+      <ul class="nav flex-column">
+        <li class="nav-item mb-2">
+          <a
+            class="nav-link{% if request.resolver_match.url_name == 'dashboard' %} active{% endif %}"
+            href="{% url 'profiles:dashboard' %}"
+          >
+            Overview
+          </a>
+        </li>
+
+        {% for item in sidebar_menu %}
+        <li class="nav-item mb-2">
+          <a class="nav-link" href="{{ item.url }}"> {{ item.label }} </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </nav>
+</div>

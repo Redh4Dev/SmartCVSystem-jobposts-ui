@@ -5,3 +5,19 @@
   border-style: solid; /* 2 */
   border-color: #e5e7eb; /* 2 */
 }
+
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.page-wrapper main {
+  flex: 1; /* grow to fill space between header & footer */
+}

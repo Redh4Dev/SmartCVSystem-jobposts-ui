@@ -71,6 +71,10 @@ class LoginView(View):
         request.session['username']  = user.username
         request.session['first_name']= user.first_name
 
+        # fetch all role names and store in session ***
+        role_qs = UsersRole.objects.filter(user_id=user.users_id).select_related('role')
+        request.session['roles'] = [ ur.role.role_name.lower() for ur in role_qs ]
+
         messages.success(request, f"Welcome back, {user.first_name}!")
         return redirect(request.GET.get('next') or '/dashboard')
 

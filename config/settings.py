@@ -88,6 +88,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 "config.context_processors.site_name",
+                'config.context_processors.sidebar_menu',
+                "django.template.context_processors.tz"
             ],
         },
     },
@@ -224,6 +226,25 @@ LOGGING = {
       'propagate': True,
     },
   },
+}
+
+SIDEBAR_MENU = {
+    'recruiter': [
+        { 'label': 'Manage Jobs',     'url_name': 'jobposts:list'      },
+        { 'label': 'View Applicants', 'url_name': 'jobposts:applicants', 'url_args': {'job_id': 0} },
+    ],
+    'candidate': [
+        { 'label': 'Search Jobs',      'url_name': 'jobposts:search'        },
+        { 'label': 'My Applications',  'url_name': 'jobposts:my_applications'},
+        { 'label': 'Saved Jobs',       'url_name': 'jobposts:saved_jobs'     },
+        { 'label': 'My Resume',        'url_name': 'profiles:resume'         },
+    ],
+    'company hr': [
+        { 'label': 'Company Profile',  'url_name': 'company:overview'   },
+        { 'label': 'Onboard Talent',   'url_name': 'company:onboard'    },
+        { 'label': 'Job Listing',      'url_name': 'jobposts:list'      },
+        { 'label': 'Post New Vacancy', 'url_name': 'jobposts:create'    },
+    ],
 }
 
 

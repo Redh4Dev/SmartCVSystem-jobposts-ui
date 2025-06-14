@@ -17,6 +17,8 @@ from apps.authx.models          import (
 )
 from .forms import ResumeForm
 from .models import ResumeFile
+from apps.jobposts.models import JobPost, UserJob
+from django.utils import timezone
 
 class DetailView(View):
     def get(self, request):
@@ -68,9 +70,21 @@ class DashboardView(SessionRequiredMixin, View):
         role_links = UsersRole.objects.filter(user_id=user_id).select_related('role')
         roles      = [rl.role for rl in role_links]
         print(roles)
+        total_jobs = JobPost.objects.filter(Recruiter_id=user_id).count()
+        expired_jobs = JobPost.objects.filter(
+            Recruiter_id=user_id,
+            ApplicationDeadline__lt=timezone.now()
+        ).count()
+        total_apps = UserJob.objects.filter(
+            JobPost__Recruiter_id=user_id,
+            IsApplied=True
+        ).count()
         return render(request, 'dashboard.html', {
             'user':  user,
             'roles': roles,
+            'total_jobs':   total_jobs,
+            'expired_jobs': expired_jobs,
+            'total_apps':   total_apps,
         })
 
 class ChangePasswordView(SessionRequiredMixin,View):
