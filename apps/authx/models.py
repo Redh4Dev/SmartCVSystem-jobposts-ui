@@ -72,6 +72,7 @@ class Role(models.Model):
 class Permission(models.Model):
     permission_id   = models.AutoField(primary_key=True, db_column='PermissionID')
     permission_name = models.CharField(max_length=100, db_column='PermissionName')
+    Description =    models.TextField(null=True, db_column='Description')
     created_at      = models.DateTimeField(auto_now_add=True, db_column='created_at')
     updated_at      = models.DateTimeField(auto_now=True,     db_column='updated_at')
 
