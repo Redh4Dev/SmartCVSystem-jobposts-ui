@@ -159,6 +159,9 @@ python manage.py runserver
 # 9. Run this command to generate static files 
 python manage.py collectstatic
 
+# 10 run the seeder
+mysql -u youruser -p yourdatabase < seed_roles_permissions.sql
+
 
 
 

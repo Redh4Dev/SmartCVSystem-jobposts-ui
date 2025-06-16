@@ -13,15 +13,13 @@ from django.utils import timezone
 from django.shortcuts import render, redirect
 from django.views import View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
+from apps.authx.middleware import PermissionRequiredMiddleware
 
 class JobPostDetailView(SessionRequiredMixin, DetailView):
-    """
-    Shows full details of a single job, and handles apply/save POSTs.
-    """
     model               = JobPost
     template_name       = 'jobposts/detail.html'
     context_object_name = 'job'
+    required_permission = 'job.detailview'
 
     def post(self, request, *args, **kwargs):
         # handle apply/save from the detail page
@@ -70,6 +68,7 @@ class SavedJobsView(SessionRequiredMixin, ListView):
     model               = UserJob
     template_name       = 'jobposts/saved_jobs.html'
     context_object_name = 'saved_apps'
+    required_permission = 'job.save'
 
     def get_queryset(self):
         user_id = self.request.session['user_id']
@@ -84,6 +83,7 @@ class MyApplicationsView(SessionRequiredMixin, ListView):
     model               = UserJob
     template_name       = 'jobposts/my_applications.html'
     context_object_name = 'applications'
+    required_permission = 'job.save'
 
     def get_queryset(self):
         user_id = self.request.session['user_id']
@@ -96,7 +96,6 @@ class MyApplicationsView(SessionRequiredMixin, ListView):
 
     def get_context_data(self, **ctx):
         ctx = super().get_context_data(**ctx)
-        # you might want to pass roles/user info too
         return ctx
 class JobPostApplicantsView(SessionRequiredMixin, ListView):
     """
@@ -125,6 +124,7 @@ class JobPostListView(SessionRequiredMixin, ListView):
     model               = JobPost
     template_name       = 'jobposts/list.html'
     context_object_name = 'jobs'
+    required_permission = 'job.view'
 
     def get_queryset(self):
         return (
@@ -139,10 +139,12 @@ class JobPostListView(SessionRequiredMixin, ListView):
         )
     
 class JobPostCreateView(SessionRequiredMixin, CreateView):
+   
     model         = JobPost
     form_class    = JobPostForm
     template_name = 'jobposts/create.html'
     success_url   = reverse_lazy('jobposts:list')
+    required_permission = 'job.create'
 
     def form_valid(self, form):
         form.instance.Recruiter_id = self.request.session['user_id']
@@ -155,6 +157,7 @@ class JobPostUpdateView(SessionRequiredMixin, UpdateView):
     template_name = 'jobposts/edit.html'
     pk_url_kwarg  = 'pk'
     success_url   = reverse_lazy('jobposts:list')
+    required_permission = 'job.update'
 
     def get_queryset(self):
         return JobPost.objects.filter(Recruiter_id=self.request.session['user_id'])
@@ -165,9 +168,7 @@ class JobPostUpdateView(SessionRequiredMixin, UpdateView):
     
 
 class JobPostCandidateJobSearchView(SessionRequiredMixin, View):
-    """
-    Let candidates search available jobs, apply or save them.
-    """
+
     template_name = 'jobposts/search.html'
 
     def get(self, request):
